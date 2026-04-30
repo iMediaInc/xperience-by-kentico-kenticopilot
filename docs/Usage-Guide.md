@@ -6,7 +6,7 @@ This guide explains how to use the AI agent skills in this repository for Xperie
 
 Before you start, you need:
 
-- An AI coding assistant (e.g., [GitHub Copilot](https://github.com/features/copilot), [Claude Code](https://www.claude.com/product/claude-code))
+- An AI coding assistant (e.g., [GitHub Copilot](https://github.com/features/copilot), [Claude Code](https://www.claude.com/product/claude-code), [Cursor](https://cursor.com))
 - Git installed on your machine
 - Access to an Xperience by Kentico project
 
@@ -24,9 +24,14 @@ Install an AI coding assistant. This repository provides plugins and skills test
 1. Install [Claude Code](https://www.claude.com/product/claude-code).
 2. Sign in to your Anthropic account.
 
+### Cursor
+
+1. Install [Cursor](https://cursor.com).
+2. Sign in as required for your Cursor plan.
+
 ## Install plugins from the marketplace
 
-This repository is an agent plugin marketplace. Install plugins directly without cloning or copying files.
+This repository provides marketplace manifests for VS Code (GitHub Copilot), Claude Code, and Cursor. Install plugins from the respective marketplace or team import when configured.
 
 ### VS Code (GitHub Copilot)
 
@@ -56,6 +61,13 @@ copilot plugin install kx13-codebase-migration@xperience-by-kentico-kenticopilot
 /plugin install widget-creation@xperience-by-kentico-kenticopilot
 /plugin install kx13-codebase-migration@xperience-by-kentico-kenticopilot
 ```
+
+### Install in Cursor
+
+1. Read [Plugins](https://cursor.com/docs/plugins) for an overview of plugin contents (skills, MCP, rules, and so on).
+2. **Team marketplace:** If your organization uses Cursor Teams or Enterprise, an admin can import this GitHub repository under **Dashboard → Settings → Plugins** ([team marketplaces](https://cursor.com/docs/plugins#team-marketplaces)). Members install plugins from the marketplace panel in Cursor.
+3. **Public marketplace:** Submit the repository at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) for broad distribution after Cursor review.
+4. **Local testing:** Copy or symlink a plugin folder (for example `plugins/widget-creation` from a clone of this repo) into `%USERPROFILE%\.cursor\plugins\local\<plugin-name>` on Windows or `~/.cursor/plugins/local/<plugin-name>` on macOS/Linux. The plugin root must include `.cursor-plugin/plugin.json`. Reload the window and verify skills and MCP in Cursor Settings. See [Test plugins locally](https://cursor.com/docs/plugins#creating-plugins).
 
 ## Copy plugin files manually (alternative)
 

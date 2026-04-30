@@ -14,14 +14,17 @@ Test your skill changes with AI assistants. This repository currently provides s
 
 - [GitHub Copilot](https://github.com/features/copilot)
 - [Claude Code](https://www.claude.com/product/claude-code)
+- [Cursor](https://cursor.com)
 
 Testing with these tools helps validate that your changes work as intended.
 
 ## Repository structure
 
 - `.claude-plugin/marketplace.json` — Claude Code marketplace manifest (lists all plugins)
+- `.cursor-plugin/marketplace.json` — Cursor marketplace manifest (lists all plugins; see [Cursor plugins reference](https://cursor.com/docs/reference/plugins#multi-plugin-repositories))
 - `.github/plugin/marketplace.json` — GitHub Copilot / VS Code marketplace manifest (lists all plugins)
 - `plugins/` — Plugin folders organized by use case (e.g., `widget-creation/`, `kx13-codebase-migration/`)
+  - `.cursor-plugin/plugin.json` — Cursor per-plugin manifest ([plugin manifest](https://cursor.com/docs/reference/plugins#plugin-manifest))
   - `.mcp.json` — MCP server configuration for the plugin
   - `skills/` — SKILL.md files defining individual agent skills
 - `examples/` — Example files passed to LLMs as context for corresponding scenarios
@@ -52,6 +55,7 @@ When you create or modify skill files:
 
    - Verify proper syntax and link validity
    - Follow existing file organization patterns
+   - When you change Cursor plugin manifests (`.cursor-plugin/`) or plugin contents, confirm the plugin loads locally in Cursor (see [Usage Guide](./Usage-Guide.md#install-in-cursor)).
 
 4. Commit your changes with a commit message following the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) convention.
 

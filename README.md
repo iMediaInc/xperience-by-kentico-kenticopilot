@@ -10,6 +10,7 @@ This repository contains plugins (skills, instructions, MCP server configuration
 
 - GitHub Copilot
 - Claude Code
+- [Cursor](https://cursor.com)
 
 Skills are transferable to other solutions. Follow the conventions of your specific assistant.
 
@@ -49,10 +50,11 @@ AI-assisted migration of Kentico Xperience 13 live-site code (pages, widgets, sh
 - An AI coding assistant, for example:
   - [GitHub Copilot](https://github.com/features/copilot)
   - [Claude Code](https://www.claude.com/product/claude-code)
+  - [Cursor](https://cursor.com)
 
 ## Install as a plugin
 
-This repository is an [agent plugin marketplace](https://code.visualstudio.com/docs/copilot/customization/agent-plugins). Install plugins directly from the marketplace — no need to clone the repository or copy files manually.
+This repository is an [agent plugin marketplace](https://code.visualstudio.com/docs/copilot/customization/agent-plugins) for VS Code and Claude Code, and a [Cursor plugin marketplace](https://cursor.com/docs/reference/plugins#multi-plugin-repositories) manifest (`.cursor-plugin/marketplace.json`) for Cursor. Install plugins from the marketplace or team import when available — or copy or symlink locally (see Cursor below).
 
 ### VS Code (GitHub Copilot)
 
@@ -81,6 +83,13 @@ copilot plugin install kx13-codebase-migration@xperience-by-kentico-kenticopilot
 /plugin install widget-creation@xperience-by-kentico-kenticopilot
 /plugin install kx13-codebase-migration@xperience-by-kentico-kenticopilot
 ```
+
+### Cursor
+
+1. See [Plugins](https://cursor.com/docs/plugins) for how Cursor discovers rules, skills, and MCP servers from a plugin.
+2. **Team or Enterprise:** In the Cursor Dashboard, go to **Settings → Plugins** and import this repository as a [team marketplace](https://cursor.com/docs/plugins#team-marketplaces), then install each plugin from the marketplace panel.
+3. **Public marketplace:** To list plugins for all users, submit the repository at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) (open source and review required).
+4. **Local verification:** Copy or symlink a plugin directory (for example `plugins/widget-creation`) into `%USERPROFILE%\.cursor\plugins\local\widget-creation` on Windows or `~/.cursor/plugins/local/widget-creation` on macOS/Linux so it contains `.cursor-plugin/plugin.json` at the plugin root. Reload Cursor (or **Developer: Reload Window**). Confirm skills under **Settings → Rules** and MCP servers under **Features → Model Context Protocol**. Details: [Test plugins locally](https://cursor.com/docs/plugins#creating-plugins).
 
 For more details, see the [Usage Guide](./docs/Usage-Guide.md).
 

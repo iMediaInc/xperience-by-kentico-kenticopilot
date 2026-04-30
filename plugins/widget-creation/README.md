@@ -12,7 +12,7 @@ These prompts provide two-stage AI assistance for building custom Page Builder w
 ## Prerequisites
 
 - Xperience by Kentico project with Page Builder configured
-- AI coding assistant installed (for example, GitHub Copilot or Claude Code)
+- AI coding assistant installed (for example, GitHub Copilot, Claude Code, or Cursor)
 - Widget requirements file describing the main use cases and behavior
 - Widget design file (optional, exported from Figma or similar)
 
@@ -41,6 +41,13 @@ copilot plugin install widget-creation@xperience-by-kentico-kenticopilot
 /plugin marketplace add Kentico/xperience-by-kentico-kenticopilot
 /plugin install widget-creation@xperience-by-kentico-kenticopilot
 ```
+
+### Cursor
+
+1. See [Plugins](https://cursor.com/docs/plugins) for how Cursor loads skills and MCP from a plugin.
+2. **Team marketplace:** Import this repository under **Dashboard → Settings → Plugins** ([team marketplaces](https://cursor.com/docs/plugins#team-marketplaces)), then install **widget-creation** from the marketplace panel.
+3. **Public:** Submit the repo at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) when listing publicly.
+4. **Local:** From a clone of [xperience-by-kentico-kenticopilot](https://github.com/Kentico/xperience-by-kentico-kenticopilot), copy or symlink `plugins/widget-creation` to `%USERPROFILE%\.cursor\plugins\local\widget-creation` (Windows) or `~/.cursor/plugins/local/widget-creation` (macOS/Linux). Reload Cursor. See [Test plugins locally](https://cursor.com/docs/plugins#creating-plugins).
 
 ## Usage
 

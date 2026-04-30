@@ -24,7 +24,7 @@ See the [Adjust and adapt your code](https://docs.kentico.com/x/migrate_your_cod
 
 - Kentico Xperience 13 project (source).
 - Xperience by Kentico project (target) connected to a database migrated using the [Kentico Migration Tool](https://github.com/Kentico/xperience-by-kentico-kentico-migration-tool). The prompts were tested on a fresh Xperience by Kentico project created using the `kentico-xperience-mvc` [project template](https://docs.kentico.com/x/DQKQC).
-- AI coding assistant installed (for example: GitHub Copilot, Claude Code).
+- AI coding assistant installed (for example: GitHub Copilot, Claude Code, or Cursor).
 
 > [!NOTE]
 > We've released a [Kentico Xperience 13 library on Context7](https://context7.com/websites/kentico_13) that you can use to look up KX13 API references and code samples when working on code migration. Note that Context7 is a third-party service not maintained or supported by Kentico, so your experience may vary.
@@ -56,6 +56,13 @@ copilot plugin install kx13-codebase-migration@xperience-by-kentico-kenticopilot
 /plugin marketplace add Kentico/xperience-by-kentico-kenticopilot
 /plugin install kx13-codebase-migration@xperience-by-kentico-kenticopilot
 ```
+
+### Cursor
+
+1. See [Plugins](https://cursor.com/docs/plugins) for how Cursor loads skills and MCP from a plugin.
+2. **Team marketplace:** Import this repository under **Dashboard → Settings → Plugins** ([team marketplaces](https://cursor.com/docs/plugins#team-marketplaces)), then install **kx13-codebase-migration** from the marketplace panel.
+3. **Public:** Submit the repo at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) when listing publicly.
+4. **Local:** From a clone of [xperience-by-kentico-kenticopilot](https://github.com/Kentico/xperience-by-kentico-kenticopilot), copy or symlink `plugins/kx13-codebase-migration` to `%USERPROFILE%\.cursor\plugins\local\kx13-codebase-migration` (Windows) or `~/.cursor/plugins/local/kx13-codebase-migration` (macOS/Linux). Reload Cursor. See [Test plugins locally](https://cursor.com/docs/plugins#creating-plugins).
 
 ## Usage
 

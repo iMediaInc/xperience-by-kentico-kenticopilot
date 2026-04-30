@@ -1,0 +1,12 @@
+{
+  "name": "kx13-codebase-migration",
+  "version": "1.0.0",
+  "description": "Skills, references, and workflows for migrating the codebase of Kentico Xperience 13 projects to Xperience by Kentico",
+  "author": {
+    "name": "Kentico"
+  },
+  "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-codebase-migration",
+  "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
+  "license": "MIT",
+  "keywords": ["kentico", "xperience", "migration", "kx13", "cms"]
+}
