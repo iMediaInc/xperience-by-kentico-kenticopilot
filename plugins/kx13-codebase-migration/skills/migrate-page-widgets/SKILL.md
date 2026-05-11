@@ -46,7 +46,7 @@ When migrating a page, ensure that everything that was fetched dynamically from 
 3. Go through pages in the legacy project and identify the provided page.
 4. When you know the page, research which sections and widgets this page uses.
 5. If present, check how other widgets and sections are implemented in the new project.
-6. Migrate all the page builder widgets and sections identified in previous steps together with all their dependencies.
+6. Migrate all the page builder widgets and sections identified in previous steps together with all their dependencies. **CRITICAL**: Make sure that all functionality in the legacy widgets are migrated, not just the visual parts. If there are dependencies missing or the code cannot be migrated in full, stop and alert the user.
 7. When done with implementation, ensure that the new project builds successfully without errors and warnings. If there are issues, fix them until none are present.
 
 Whenever unsure about anything, use Kentico Docs MCP to search for relevant information.
