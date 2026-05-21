@@ -4,7 +4,8 @@ description: >-
   Migrates a KX13 custom table to an xByK content hub content type. Creates the
   CMS_Class registration, backing SQL table, C# entity class, content hub folder,
   and migrates all data rows. Use when the user asks to migrate a custom table,
-  create a content type from a custom table, or move SCFTA custom table data to xByK.
+  create a content type from a custom table, or move a custom table data to xByK.
+compatibility: Requires Kentico Docs MCP
 ---
 
 # Migrate KX13 Custom Table to xByK Content Hub Content Type
@@ -15,20 +16,28 @@ This skill migrates a single KX13 custom table (e.g. `SCFTA.ConfigSettings`) int
 functional xByK **Reusable** content hub content type. It produces:
 
 1. A `CMS_Class` row (content type registration)
-2. A backing SQL table (`Segerstrom_{TypeName}`)
-3. A C# entity class in `Segerstrom.Entities/ReusableContentTypes/{TypeName}/`
+2. A backing SQL table (`{LegacyPrefix}_{TypeName}`)
+3. A C# entity class in `{ProjectName}.Entities/ReusableContentTypes/{TypeName}/`
 4. A content hub folder for the items
 5. Migrated data rows as published content items
 
+## Structure of the projects
+
+You are currently located in the root folder, which contains two subfolders:
+
+- `KX13/` - This folder contains the Kentico Xperience 13 project files. This is the legacy/source project.
+- `XbyK/` - This folder contains the Xperience by Kentico project files. This is the new project.
+
+
 ## Prerequisites
 
-- **xByK database**: `scfta-xbyk` on `MREALE-DESKTOP`, user `scfta-admin`
-- **KX13 database**: `Segerstrom_Kentico13_v2 20260504` (same server)
+- **xByK database**: get the connection string from the XbyK application
+- **KX13 database**: get the connection string from the KX13 application
 - **KX13 custom tables** live in the xByK database as `SCFTA_*` tables (already migrated by the migration tool)
 - **Workspace ID**: `1` (`KenticoDefault`)
 - **Default language ID**: query `CMS_ContentLanguage WHERE ContentLanguageIsDefault = 1`
 - **Default user**: query `CMS_User WHERE UserName = 'administrator'`
-- **Entity project**: `Segerstrom.Entities/Segerstrom.Entities.csproj` (targets `net10.0`, uses `CMS.AssemblyDiscoverableAttribute`)
+- **Entity project**: `{ProjectName}.Entities/{ProjectName}.Entities.csproj` (targets `net10.0`, uses `CMS.AssemblyDiscoverableAttribute`)
 
 ## Step-by-step Workflow
 
@@ -54,9 +63,9 @@ Identify the **user columns** (skip the `Item*` system columns). These become co
 
 ### Step 2: Choose the xByK Type Name
 
-- Pick a name like `Segerstrom.{TypeName}` (e.g. `Segerstrom.AppConfigSetting`)
-- The C# class will be `{TypeName}` in namespace `Segerstrom`
-- **CRITICAL**: Check for name collisions with existing classes in `Segerstrom.Business` and
+- Pick a name like `{ProjectName}.{TypeName}` (e.g. `Segerstrom.AppConfigSetting`)
+- The C# class will be `{TypeName}` in namespace `{ProjectName}`
+- **CRITICAL**: Check for name collisions with existing classes in `{ProjectName}.Business` and
   the Tessitura SDK. Search the codebase: `class {TypeName}`. If there's a collision, pick a
   different name (prefix with `App`, `Site`, etc.)
 
@@ -73,9 +82,9 @@ Required columns and their values:
 
 | Column | Value |
 |--------|-------|
-| `ClassName` | `Segerstrom.{TypeName}` |
+| `ClassName` | `{ProjectName}.{TypeName}` |
 | `ClassDisplayName` | Human-readable name |
-| `ClassTableName` | `Segerstrom_{TypeName}` |
+| `ClassTableName` | `{ProjectName}_{TypeName}` |
 | `ClassXmlSchema` | See template below |
 | `ClassFormDefinition` | See template below |
 | `ClassType` | `Content` |
@@ -170,37 +179,37 @@ Form field type mapping:
 #### 3b. Backing SQL table
 
 ```sql
-CREATE TABLE Segerstrom_{TypeName} (
+CREATE TABLE {ProjectName}_{TypeName} (
     ContentItemDataID           INT              NOT NULL IDENTITY(1,1) PRIMARY KEY,
     ContentItemDataCommonDataID INT              NOT NULL,
     ContentItemDataGUID         UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
     -- user columns here (use [brackets] for SQL reserved words like [Key], [Value], [Order]) --
-    CONSTRAINT FK_Segerstrom_{TypeName}_CommonData
+    CONSTRAINT FK_{ProjectName}_{TypeName}_CommonData
         FOREIGN KEY (ContentItemDataCommonDataID)
         REFERENCES CMS_ContentItemCommonData (ContentItemCommonDataID)
 );
 
-CREATE UNIQUE NONCLUSTERED INDEX UQ_Segerstrom_{TypeName}_GUID
-    ON Segerstrom_{TypeName} (ContentItemDataGUID);
-CREATE NONCLUSTERED INDEX IX_Segerstrom_{TypeName}_CommonDataID
-    ON Segerstrom_{TypeName} (ContentItemDataCommonDataID);
+CREATE UNIQUE NONCLUSTERED INDEX UQ_{ProjectName}_{TypeName}_GUID
+    ON {ProjectName}_{TypeName} (ContentItemDataGUID);
+CREATE NONCLUSTERED INDEX IX_{ProjectName}_{TypeName}_CommonDataID
+    ON {ProjectName}_{TypeName} (ContentItemDataCommonDataID);
 ```
 
 ### Step 4: Create the C# Entity Class
 
-Create `Segerstrom.Entities/ReusableContentTypes/{TypeName}/{TypeName}.generated.cs`:
+Create `{ProjectName}.Entities/ReusableContentTypes/{TypeName}/{TypeName}.generated.cs`:
 
 ```csharp
 using System;
 using System.Collections.Generic;
 using CMS.ContentEngine;
 
-namespace Segerstrom
+namespace {ProjectName}
 {
     [RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
     public partial class {TypeName} : IContentItemFieldsSource
     {
-        public const string CONTENT_TYPE_NAME = "Segerstrom.{TypeName}";
+        public const string CONTENT_TYPE_NAME = "{ProjectName}.{TypeName}";
 
         [SystemField]
         public ContentItemFields SystemFields { get; set; }
@@ -215,7 +224,7 @@ namespace Segerstrom
 ### Step 5: Build and Verify
 
 ```bash
-dotnet build Segerstrom.Entities/Segerstrom.Entities.csproj --no-restore
+dotnet build {ProjectName}.Entities/{ProjectName}.Entities.csproj --no-restore
 ```
 
 If there's a name collision error, rename the type (go back to Step 2). Then build the full app:
@@ -283,7 +292,7 @@ four tables in this order:
     | `ContentItemLanguageMetadataHasImageAsset` | `0` |
     | `ContentItemLanguageMetadataContentLanguageID` | `@DefaultLanguageId` |
 
-4. **Segerstrom_{TypeName}** — the type-specific data table
+4. **{ProjectName}_{TypeName}** — the type-specific data table
 
     | Column | Value |
     |--------|-------|
@@ -305,32 +314,9 @@ Skip already-migrated rows by checking `ContentItemGUID` existence.
 - **`ClassWebPageHasUrl`** must be `0` for reusable types — if NULL, items won't appear in admin
 - **`ContentItemWorkspaceID`** must be `1` on every `CMS_ContentItem` row — if NULL, items are invisible in the content hub
 - **`ContentItemCommonDataFirstPublishedWhen`** should be set to `GETUTCDATE()` for published items
-- **Name collisions**: The C# class lives in namespace `Segerstrom` which is a parent namespace of `Segerstrom.Business`. Any class name that matches an existing type in the Tessitura SDK or business layer will cause build errors. Always search first.
+- **Name collisions**: The C# class lives in namespace `{ProjectName}` which is a parent namespace of `{ProjectName}.Business`. Any class name that matches an existing type in the Tessitura SDK or business layer will cause build errors. Always search first.
 - **SQL reserved words**: Columns like `Key`, `Value`, `Order`, `Index` need `[brackets]` in SQL
 - **`SET QUOTED_IDENTIFIER ON`**: Required at the top of every SQL script for xByK
 - **Form field GUIDs**: Each `<field>` needs a unique GUID — generate deterministic ones or use `NEWID()` style
 - **System fields have no `visible` attribute**: The three system fields (`ContentItemDataID`, `ContentItemDataCommonDataID`, `ContentItemDataGUID`) must NOT have `visible="true"` — this causes `ArgumentNullException` in the admin
 - **App restart required**: Kentico caches content type definitions in memory. Always restart after creating a new type.
-
-## Available KX13 Custom Tables
-
-These `SCFTA_*` tables exist in the xByK database and can be migrated:
-
-- `SCFTA_AlgoliaMarketingItem`
-- `SCFTA_ArtsTeachProgram`
-- `SCFTA_AutoPublishPages`
-- `SCFTA_CampsClasses`
-- `SCFTA_ConfigSettings` (already migrated as `Segerstrom.AppConfigSetting`)
-- `SCFTA_ExcludePagesFromStaging`
-- `SCFTA_FacetFilters`
-- `SCFTA_GiftCertificate`
-- `SCFTA_ImgixSettings`
-- `SCFTA_JobOpening`
-- `SCFTA_KountENS`
-- `SCFTA_MicroCyo`
-- `SCFTA_MosGate`
-- `SCFTA_PerformanceReference`
-- `SCFTA_Prospect2Queue`
-- `SCFTA_SMSSaleAlertPhoneNumbers`
-- `SCFTA_TessituraAssociation`
-- `SCFTA_WidgetLimiter`
