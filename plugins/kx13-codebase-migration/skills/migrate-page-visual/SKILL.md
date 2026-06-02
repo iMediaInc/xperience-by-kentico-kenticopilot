@@ -51,7 +51,8 @@ The page migration from KX13 to XbyK has been completed in the previous step. Th
 4. **Fix each difference** - For each visual discrepancy:
    - Identify the source of the difference (CSS, HTML structure, missing content)
    - Make the necessary changes in the XbyK project
-   - Prefer fixing via CSS/styling over changing HTML structure
+   - Don't make changes to the CSS. Make sure that the CSS has been ported over to the new site correctly, then ensure that the HTML matches the legacy site's html.
+   - Ensure that JS loads in the same order as it did on the legacy site to ensure that the rendered pages are the same.
    - Implement retrieval of missing content dynamically from the database
    - Nothing can be hardcoded if it was dynamic in the legacy project
 
@@ -61,11 +62,11 @@ The page migration from KX13 to XbyK has been completed in the previous step. Th
 
 6. **Verify the fix** - Use Playwright MCP to check if the difference is resolved
 
-7. **Iterate** - Repeat steps 3-6 until both pages are visually identical
+7. **Iterate** - Repeat steps 3-6 until both pages are visually identical. If you've iterated more than 3 times but have to make HTML changes, stop and let the user know what happened and what's different. Let them decide how to solve the problem.
 
 ## Output format
 
-When done, provide the user with this exact output (without any additional text):
+When successfully done, provide the user with this exact output (without any additional text):
 
 ```
 # Migration Complete
