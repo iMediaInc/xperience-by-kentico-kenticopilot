@@ -44,7 +44,7 @@ When migrating a page, ensure that everything that was fetched dynamically from 
 3. Go through pages in the legacy project and identify the provided page.
 4. When you know the page, research how this page works and identify all other shared pages, components, or whatever this page relies on.
 5. If present, check how other pages are implemented in the new project.
-6. Migrate page's controller, content, layout, and relevant components, repositories, and services to the new project, together with all dependencies identified.**CRITICAL**: Make sure that all functionality in the legacy component is migrated, not just the visual parts. If there are dependencies missing or the code cannot be migrated in full, stop and alert the user.
+6. Migrate page's controller, content, layout, and relevant components, repositories, and services to the new project, together with all dependencies identified.**CRITICAL**: Make sure that all functionality in the legacy component is migrated, not just the visual parts. If there are dependencies missing or the code cannot be migrated in full, stop and alert the user. Ensure that HTML is identical between the KX13 and XbyK sites.
 7. When done with implementation, ensure that the new project builds successfully without errors and warnings. If not, fix the issues until none are present.
 8. Using the Playwright MCP, check that the migrated page is displayed correctly and functions as expected, exactly matching styling, content, and texts as in the image of the legacy page. If not, make necessary adjustments until it does (this can also include changes in dependencies).
 
