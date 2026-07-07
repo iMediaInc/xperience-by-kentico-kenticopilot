@@ -111,4 +111,99 @@ In the below prompt, substitute the prefix of the tables in the legacy and targe
 ```
 For any of the custom tables that haven't been migrated yet, run the /migrate-custom-tables skill. The legacy prefix is {legacy prefix} and the ProjectName is {target prefix}
 ```
+## migrate business layer
+This will migrate the business layer from .net framework to .net core and upgrade the app to use XByK references. Here's the parameters:
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `{CLIENT}` | Client/project name used in namespaces and project names | `Segerstrom` |
+| `{KX13_SOURCE}` | Relative path to the KX13 business layer project | `kx13/Segerstrom.Business` |
+| `{XBYK_WEB}` | Relative path to the xByK web project | `xbyk` |
+| `{KX13_CODENAME_PREFIX}` | KX13 document type code name prefix (usually the site code) | `SCFTA` |
+| `{TESS_API_VERSION}` | iMedia.Tess.Api NuGet package version | `16.0.16` |
+| `{KENTICO_CORE_VERSION}` | Kentico.Xperience.Core NuGet package version | `31.4.3` |
+| `{ALGOLIA_VERSION}` | Algolia.Search NuGet package version (omit if not used) | `6.10.2` |
+| `{HAS_ALGOLIA}` | Whether project uses Algolia search | `true` / `false` |
+| `{HAS_WCF_SOAP}` | Whether project has WCF/SOAP Connected Services | `true` / `false` |
+| `{HAS_DYNAMIC_PDF}` | Whether project uses ceTe.DynamicPDF | `true` / `false` |
+| `{EXTRA_PACKAGES}` | Additional NuGet packages the business layer needs | `log4net`, `Kount.Net.RisSDK`, etc. |
 
+
+
+```
+Migrate the business layer using the /migrate-business-logic skill. 
+parameters: 
+ - Client:{Client eg LAOpera}
+ - ...
+```
+
+## Migrate pages
+This is a multi-step process.
+
+```
+You are the migration orchestrator for a Kentico Xperience 13 to Xperience by Kentico page migration.
+
+Your job is to plan and coordinate only. Do not migrate pages yourself unless explicitly asked.
+
+Use the available KentiCopilot skills and repository context to:
+
+1. Identify the source KX13 page templates, controllers, views, repositories, widgets, sections, and shared components.
+2. Create a page inventory.
+3. Group pages into four worker-safe batches.
+4. Detect likely shared components and assign ownership so workers do not edit the same files independently.
+5. Write all output to migration/_control/.
+6. Create clear worker task files.
+7. Create validation criteria for each page.
+
+Rules:
+- Do not edit page implementation files.
+- Do not make broad refactors.
+- Do not let two workers own the same shared component.
+- Every page task must include source files, target files, dependencies, expected route, expected widgets, and validation notes.
+- Prefer incremental page-by-page migration over large global changes.
+```
+
+when that's done, run the below to handle shared component migration:
+```
+You are the shared data worker orchestrator.
+Create 4 subagents based on the identifiers made in the previous step. Each subagent should get this direction:
+
+You are Worker {Subagent identifier} in a Kentico Xperience 13 to Xperience by Kentico migration.
+
+Read these files first:
+- migration/_control/migration-plan.md
+- migration/_control/worker-assignments.md
+- migration/_control/shared-component-ownership.md
+- migration/_control/page-status/worker-{subagent identifier}.md
+
+create a git worktree for yourself by running `git worktree add ./migration-worker-{subagent identifier} -b migration/worker-{subagent identifier}`
+
+Only migrate pages assigned to Worker {subagent identifier}.
+
+Use the KentiCopilot codebase migration skills where appropriate:
+- migrate-page for page controller/view/repository/dependency migration
+- migrate-page-widgets for page-specific Page Builder widgets and sections
+- migrate-shared-component only for shared components explicitly assigned to Worker {subagent identifier}
+
+Rules:
+- Do not edit pages assigned to other workers.
+- Do not edit shared components unless Worker {subagent identifier} owns them.
+- Do not make unrelated formatting changes.
+- Preserve behavior, routing, field mappings, SEO/meta behavior, localization, and widget behavior.
+- After each page, update migration/_control/page-status/worker-a.md.
+- Include source files changed, target files changed, assumptions, unresolved issues, and validation steps.
+- Run build/tests if available and record the result.
+```
+
+now we bulk migrate pages.
+substitute the `legacy site url` and `main page type` below.
+```
+you are the page migrator for a Kentico XPerience 13-> XbyK migration. 
+
+1. Gather a list of all page urls from KX13 to migrate. store those in a file in migration/_control. 
+Break that list into 10 worker processes. use the kentico MCP and the KxConnectionString from Migration.Tool.CLI/appsettings.json to help you get the page urls.
+2. Start 10 subagents. have each worker process create their own git worktree. Each should take it's own list of urls from the list we generated in the first step. each subagent should run  /migrate-page-widgets  and /migrate-page  for that given url. The url for the legacy site is {legacy url}.  for now, focus on the "{main Page type}" page type pages.
+3. when a worker is done with the migration of a page, use the /migrate-page-visual skill to take a snapshot of the page on both the xbyk site and the KX13 site and use the playwright-mcp to generate a differential. if more than 20% of the pixels are off, then flag that item in the url list we created above for further review.
+4. When done with the first pass, let me know what pages have issues.
+5. Run through the pages that have errors from the first pass. For each one use the /migrate-page-visual skill to take a snapshot of the page on both the xbyk site and the KX13 site and use the playwright-mcp to generate a differential. If more than 20% of the pixels are off, then flag that item in the url list we created above for further review. If there is still an issue, assign the page to it's particular worker. That worker should use /migrate-page-widgets and /migrate-page to fix the page. run /migrate-page-visual again when done, take the snapshot, and flag again if it still doesn't look right.
+6. Generate another report with the final results after the 2nd pass.
+```
