@@ -18,7 +18,7 @@ functional xByK **Reusable** content hub content type. It produces:
 1. A `CMS_Class` row (content type registration)
 2. A backing SQL table (`{LegacyPrefix}_{TypeName}`)
 3. A C# entity class in `{ProjectName}.Entities/ReusableContentTypes/{TypeName}/`
-4. A content hub folder for the items
+4. A content hub workspace (existing or newly created) and folder for the items
 5. Migrated data rows as published content items
 
 ## Structure of the projects
@@ -34,14 +34,98 @@ You are currently located in the root folder, which contains two subfolders:
 - **xByK database**: get the connection string from the XbyK application
 - **KX13 database**: get the connection string from the KX13 application
 - **KX13 custom tables** live in the xByK database as `SCFTA_*` tables (already migrated by the migration tool)
-- **Workspace ID**: `1` (`KenticoDefault`)
+- **Workspace**: resolve via Step 1 (do **not** hardcode `KenticoDefault` / ID `1`)
 - **Default language ID**: query `CMS_ContentLanguage WHERE ContentLanguageIsDefault = 1`
 - **Default user**: query `CMS_User WHERE UserName = 'administrator'`
 - **Entity project**: `{ProjectName}.Entities/{ProjectName}.Entities.csproj` (targets `net10.0`, uses `CMS.AssemblyDiscoverableAttribute`)
 
 ## Step-by-step Workflow
 
-### Step 1: Examine the KX13 Custom Table
+### Step 1: Resolve Target Workspace
+
+**STOP and prompt the user** before creating folders or migrating data. Workspaces own content hub folders and content items; every migrated item must reference the chosen `@WorkspaceID`.
+
+1. List existing workspaces from the xByK database:
+
+```sql
+SELECT WorkspaceID, WorkspaceName, WorkspaceDisplayName, WorkspaceGUID
+FROM CMS_Workspace
+ORDER BY WorkspaceID;
+```
+
+2. Ask the user which option they want:
+   - **Use an existing workspace** — they pick one from the list (by `WorkspaceName` or `WorkspaceID`)
+   - **Create a new workspace** — ask for a code name (`WorkspaceName`, e.g. `Segerstrom`) and display name (`WorkspaceDisplayName`)
+
+3. Resolve `@WorkspaceID` from `CMS_Workspace`. If creating (or the requested name is missing), insert the row only when it does not already exist:
+
+```sql
+DECLARE @WorkspaceName NVARCHAR(100) = N'{WorkspaceName}';
+DECLARE @WorkspaceDisplayName NVARCHAR(200) = N'{WorkspaceDisplayName}';
+DECLARE @WorkspaceID INT;
+
+SELECT @WorkspaceID = WorkspaceID
+FROM CMS_Workspace
+WHERE WorkspaceName = @WorkspaceName;
+
+IF @WorkspaceID IS NULL
+BEGIN
+    INSERT INTO CMS_Workspace (
+        WorkspaceDisplayName,
+        WorkspaceName,
+        WorkspaceGUID
+    ) VALUES (
+        @WorkspaceDisplayName,
+        @WorkspaceName,
+        NEWID()
+    );
+
+    SET @WorkspaceID = SCOPE_IDENTITY();
+END
+
+SELECT @WorkspaceID AS WorkspaceID, @WorkspaceName AS WorkspaceName;
+```
+
+`CMS_Workspace` columns used here:
+
+| Column | Notes |
+|--------|-------|
+| `WorkspaceID` | Identity PK — store as `@WorkspaceID` for later steps |
+| `WorkspaceName` | Code name (unique) |
+| `WorkspaceDisplayName` | Admin UI label |
+| `WorkspaceGUID` | `NEWID()` |
+
+4. Ensure the workspace has a **root content folder** (required for Content hub). Query and create if missing:
+
+```sql
+DECLARE @RootFolderID INT;
+
+SELECT @RootFolderID = ContentFolderID
+FROM CMS_ContentFolder
+WHERE ContentFolderWorkspaceID = @WorkspaceID
+  AND ContentFolderParentFolderID IS NULL;
+
+IF @RootFolderID IS NULL
+BEGIN
+    INSERT INTO CMS_ContentFolder (
+        ContentFolderName, ContentFolderDisplayName, ContentFolderGUID,
+        ContentFolderCreatedByUserID, ContentFolderCreatedWhen, ContentFolderModifiedWhen,
+        ContentFolderTreePath, ContentFolderParentFolderID, ContentFolderWorkspaceID
+    ) VALUES (
+        N'{WorkspaceName}', N'{WorkspaceDisplayName}', NEWID(),
+        @DefaultUserId, GETUTCDATE(), GETUTCDATE(),
+        N'/', NULL, @WorkspaceID
+    );
+
+    SET @RootFolderID = SCOPE_IDENTITY();
+END
+
+-- Store @RootFolderID for Step 7 (folder parent)
+```
+
+5. Carry `@WorkspaceID` and `@RootFolderID` through all later SQL. Never fall back to hardcoding `1`.
+
+### Step 2: Examine the KX13 Custom Table
 
 Query the source table schema and data:
 
@@ -61,7 +145,7 @@ SELECT * FROM {SCFTA_TableName};
 
 Identify the **user columns** (skip the `Item*` system columns). These become content type fields.
 
-### Step 2: Choose the xByK Type Name
+### Step 3: Choose the xByK Type Name
 
 - Pick a name like `{ProjectName}.{TypeName}` (e.g. `Segerstrom.AppConfigSetting`)
 - The C# class will be `{TypeName}` in namespace `{ProjectName}`
@@ -69,14 +153,14 @@ Identify the **user columns** (skip the `Item*` system columns). These become co
   the Tessitura SDK. Search the codebase: `class {TypeName}`. If there's a collision, pick a
   different name (prefix with `App`, `Site`, etc.)
 
-### Step 3: Create the Content Type (SQL)
+### Step 4: Create the Content Type (SQL)
 
 Write a SQL script to `scripts/create-{typename}.sql`. Use `sqlcmd -i` to execute (avoids
 PowerShell quoting issues with XML).
 
 The script must create three things in this order:
 
-#### 3a. CMS_Class row
+#### 4a. CMS_Class row
 
 Required columns and their values:
 
@@ -176,7 +260,7 @@ Form field type mapping:
 - Omit `allowempty` (or set `false`) for required columns
 - For `boolean` fields, add `<properties><defaultvalue>false</defaultvalue>...</properties>`
 
-#### 3b. Backing SQL table
+#### 4b. Backing SQL table
 
 ```sql
 CREATE TABLE {ProjectName}_{TypeName} (
@@ -195,7 +279,7 @@ CREATE NONCLUSTERED INDEX IX_{ProjectName}_{TypeName}_CommonDataID
     ON {ProjectName}_{TypeName} (ContentItemDataCommonDataID);
 ```
 
-### Step 4: Create the C# Entity Class
+### Step 5: Create the C# Entity Class
 
 Create `{ProjectName}.Entities/ReusableContentTypes/{TypeName}/{TypeName}.generated.cs`:
 
@@ -221,19 +305,21 @@ namespace {ProjectName}
 }
 ```
 
-### Step 5: Build and Verify
+### Step 6: Build and Verify
 
 ```bash
 dotnet build {ProjectName}.Entities/{ProjectName}.Entities.csproj --no-restore
 ```
 
-If there's a name collision error, rename the type (go back to Step 2). Then build the full app:
+If there's a name collision error, rename the type (go back to Step 3). Then build the full app:
 
 ```bash
 dotnet build xbky/xbky.csproj
 ```
 
-### Step 6: Create Content Hub Folder
+### Step 7: Create Content Hub Folder
+
+Create the type folder under the workspace root from Step 1 (`@RootFolderID` / `@WorkspaceID`):
 
 ```sql
 INSERT INTO CMS_ContentFolder (
@@ -243,11 +329,11 @@ INSERT INTO CMS_ContentFolder (
 ) VALUES (
     N'{TypeName}', N'{Display Name}', NEWID(),
     @DefaultUserId, GETUTCDATE(), GETUTCDATE(),
-    N'/{TypeName}', 1, 1  -- parent=Root(1), workspace=KenticoDefault(1)
+    N'/{TypeName}', @RootFolderID, @WorkspaceID
 );
 ```
 
-### Step 7: Migrate Data
+### Step 8: Migrate Data
 
 Write a SQL script to `scripts/migrate-{typename}-data.sql`. For each source row, insert into
 four tables in this order:
@@ -263,7 +349,7 @@ four tables in this order:
     | `ContentItemIsSecured` | `0` |
     | `ContentItemIsReusable` | `1` |
     | `ContentItemContentFolderID` | `@FolderID` |
-    | `ContentItemWorkspaceID` | `1` |
+    | `ContentItemWorkspaceID` | `@WorkspaceID` (from Step 1 — never hardcode `1`) |
 
 2. **CMS_ContentItemCommonData**
 
@@ -303,7 +389,7 @@ four tables in this order:
 Use a cursor to iterate source rows. Wrap in `BEGIN TRANSACTION / COMMIT`.
 Skip already-migrated rows by checking `ContentItemGUID` existence.
 
-### Step 8: Restart and Verify
+### Step 9: Restart and Verify
 
 1. Kill any running `dotnet run` process on port 20830
 2. Start fresh: `dotnet run` from `xbky/`
@@ -312,7 +398,8 @@ Skip already-migrated rows by checking `ContentItemGUID` existence.
 ## Critical Gotchas
 
 - **`ClassWebPageHasUrl`** must be `0` for reusable types — if NULL, items won't appear in admin
-- **`ContentItemWorkspaceID`** must be `1` on every `CMS_ContentItem` row — if NULL, items are invisible in the content hub
+- **`ContentItemWorkspaceID`** must be the resolved `@WorkspaceID` on every `CMS_ContentItem` row — if NULL, items are invisible in the content hub. Do not hardcode `1` unless the user explicitly chose that workspace
+- **New workspaces need a root folder**: inserting only into `CMS_Workspace` is not enough — create the root `CMS_ContentFolder` (`ParentFolderID IS NULL`, `TreePath = '/'`) for that workspace before adding type folders
 - **`ContentItemCommonDataFirstPublishedWhen`** should be set to `GETUTCDATE()` for published items
 - **Name collisions**: The C# class lives in namespace `{ProjectName}` which is a parent namespace of `{ProjectName}.Business`. Any class name that matches an existing type in the Tessitura SDK or business layer will cause build errors. Always search first.
 - **SQL reserved words**: Columns like `Key`, `Value`, `Order`, `Index` need `[brackets]` in SQL
