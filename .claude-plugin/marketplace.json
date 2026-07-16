@@ -46,8 +46,8 @@
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-codebase-migration",
-      "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-codebase-migration",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
       "keywords": ["kentico", "xperience", "migration", "kx13", "cms"],
       "strict": false
@@ -60,8 +60,8 @@
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/configure-cd-repository",
-      "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/configure-cd-repository",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
       "keywords": [
         "kentico",
@@ -80,8 +80,8 @@
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-content-migration",
-      "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-content-migration",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
       "keywords": ["kentico", "xperience", "migration", "kx13", "cms"],
       "strict": false
@@ -94,8 +94,8 @@
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-content-audit",
-      "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-content-audit",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
       "keywords": ["kentico", "xperience", "migration", "kx13", "cms"],
       "strict": false
