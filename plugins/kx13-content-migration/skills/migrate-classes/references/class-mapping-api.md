@@ -46,8 +46,8 @@ var m = new MultiClassMapping(targetClassName, target =>
 
 | Property               | Type                   | Values                      | Notes                                          |
 | ---------------------- | ---------------------- | --------------------------- | ---------------------------------------------- |
-| `ClassName`            | string                 | `"Namespace.ClassName"`     | Must match target content type code name       |
-| `ClassTableName`       | string                 | `"Namespace_ClassName"`     | SQL table name (underscores, not dots)         |
+| `ClassName`            | string                 | `"Namespace.ClassName"`     | Must match plan target ClassName / `{CONTENT_TYPE_NAMESPACE}` exactly — never substitute .NET project name (see [content-type-namespaces.md](../../_shared/references/content-type-namespaces.md)) |
+| `ClassTableName`       | string                 | `"Namespace_ClassName"`     | SQL table name from the same ClassName (underscores, not dots) |
 | `ClassDisplayName`     | string                 |                             | Human-readable name                            |
 | `ClassType`            | `ClassType`            | `ClassType.CONTENT_TYPE`    | Always CONTENT_TYPE for page types             |
 | `ClassContentTypeType` | `ClassContentTypeType` | `.WEBSITE` or `.REUSABLE`   | Website = has URL, Reusable = Content Hub item |

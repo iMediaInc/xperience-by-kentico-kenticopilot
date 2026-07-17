@@ -114,6 +114,16 @@ KX13 `docrelationships` fields store their data in the `CMS_Relationship` table,
 
 > The migration tool only creates content types from source data (via `IClassMapping` during `--page-types`). Content types marked **Manual** below have no source mapping and must be created manually in XbyK before or after migration.
 
+### Content Type Namespace Convention
+
+| Decision | Value |
+| -------- | ----- |
+| Policy | [Preserve KX13 namespaces / Remap namespaces] |
+| `{CONTENT_TYPE_NAMESPACE}` | [e.g. SCFTA] |
+| Codegen / Entities note | [C# model namespace and `CONTENT_TYPE_NAME` must match these ClassNames; do not substitute .NET project name] |
+
+<!-- If remapping: full Source ClassName → Target ClassName table. Every Webpage / Content Hub Class Name below must match this convention. -->
+
 ### Webpage Content Types
 
 | Class Name                  | Display Name   | Reusable Field Schemas | Created By                | Notes                                |

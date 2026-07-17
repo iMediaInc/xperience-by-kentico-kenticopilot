@@ -113,7 +113,7 @@ Skip this sub-step if the migration plan confirmed no linked pages exist. Otherw
 - For `LinkChildren`: always include a `Where` filter on `source.ChildNodes` to select appropriate child types.
 - Namespace: `Migration.Tool.Extensions.ContentItemDirectors` (user can override).
 - File naming convention: `{ConcernName}Director.cs`.
-- Use string constants for class names and field names, following the `Source_`/`Target_` prefix convention from the example.
+- Use string constants for class names and field names, following the `Source_`/`Target_` prefix convention from the example. **Target class name constants must match the plan's target ClassNames exactly** (same `{CONTENT_TYPE_NAMESPACE}` — do not substitute a .NET project name). See [content-type-namespaces.md](../_shared/references/content-type-namespaces.md).
 - Add `TODO` comments for values unknown at generation time (e.g., widget type identifiers, editable area names, section identifiers). Class IDs should be available from the migration plan's page type table; only add `TODO` if genuinely missing.
 - Do not regenerate `appsettings.json` or class mapping code — only `ContentItemDirectorBase` code.
 - If a Kentico documentation lookup tool is available, verify uncertain API details before generating code.

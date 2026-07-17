@@ -16,7 +16,8 @@ Before starting, collect these values from the user. Use them everywhere you see
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
-| `{CLIENT}` | Client/project name used in namespaces and project names | `Segerstrom` |
+| `{CLIENT}` | Client/project name used in **project/assembly** names | `Segerstrom` |
+| `{CONTENT_TYPE_NAMESPACE}` | Entity ClassName / C# namespace from registered content types | `SCFTA` |
 | `{KX13_SOURCE}` | Relative path to the KX13 business layer project | `kx13/Segerstrom.Business` |
 | `{XBYK_WEB}` | Relative path to the xByK web project | `xbky` |
 | `{KX13_CODENAME_PREFIX}` | KX13 document type code name prefix (usually the site code) | `SCFTA` |
@@ -30,11 +31,13 @@ Before starting, collect these values from the user. Use them everywhere you see
 
 If the user does not specify values, inspect the KX13 `.csproj` file at `{KX13_SOURCE}` to discover them: read the `<RootNamespace>`, package references, and connected services.
 
+Resolve `{CONTENT_TYPE_NAMESPACE}` from Entities `CONTENT_TYPE_NAME` constants / migration plan / `CMS_Class` — not from `{CLIENT}`. See [content-type-namespaces.md](../_shared/references/content-type-namespaces.md).
+
 ## Prerequisites
 
 - Source KX13 project at `{KX13_SOURCE}/`
 - Target xByK web project at `{XBYK_WEB}/`
-- `{CLIENT}.Entities` project with xByK-generated content types in the `{CLIENT}` namespace
+- `{CLIENT}.Entities` project with xByK-generated content types in the `{CONTENT_TYPE_NAMESPACE}` namespace
 
 ## Migration Steps
 
@@ -61,7 +64,7 @@ Whenever unsure about anything, you can use Kentico Docs MCP to search for relev
 |-------|-----|
 | `CS0120: object reference required for non-static member` | Service was `static` in KX13, now instance. Add `static Instance` property or pass via DI. |
 | `CS0029: Cannot convert TessituraLogger to iLogger` | Make `TessituraLogger` implement `iMedia.Tess.Api.Interfaces.iLogger` |
-| `CS0234: 'Entities' does not exist in namespace '{CLIENT}'` | Use `{CLIENT}.TypeName` not `{CLIENT}.Entities.PageContentTypes.TypeName.TypeName` |
+| `CS0234: 'Entities' does not exist in namespace '{CLIENT}'` | Use `{CONTENT_TYPE_NAMESPACE}.TypeName` (from Entities), not `{CLIENT}.Entities.PageContentTypes...` and not `{CLIENT}.TypeName` unless ClassNames were remapped to `{CLIENT}` |
 | `CS0436: type conflicts with imported type` | Delete the compatibility shim — real xByK type exists in `Kentico.Xperience.Core` |
 | `CS1061: type missing a property from KX13` | Add property to partial class in `{CLIENT}.Entities` or as extension method |
 | `CS1503: WCF constructor string→Binding` | Remove string-based `ClientBase<T>` constructors, keep `(Binding, EndpointAddress)` only |

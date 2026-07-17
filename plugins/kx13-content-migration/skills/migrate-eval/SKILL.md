@@ -65,6 +65,7 @@ Read the migration plan detail. Split by `## ` (H2) and `### ` (H3) headings. Pa
 
 | Plan Section | What to Extract |
 |---|---|
+| Target Content Model > Content Type Namespace Convention | Policy, `{CONTENT_TYPE_NAMESPACE}`, remaps |
 | Target Content Model > Webpage Content Types | Class names, created by (tool/manual) |
 | Target Content Model > Content Hub Types | Class names, created by |
 | Target Content Model > Reusable Field Schemas | Schema names, field names |

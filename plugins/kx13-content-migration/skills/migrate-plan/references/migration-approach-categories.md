@@ -7,6 +7,23 @@ These categories cover structural decisions that affect migration complexity. Th
 
 Scan for these categories in order. Skip any category that does not apply to the source model.
 
+**Always resolve Content type ClassName namespace first** — it is mandatory for every migration and constrains every target ClassName in the plan.
+
+## Content type ClassName namespace (mandatory)
+
+Content type code names (`CMS_Class.ClassName`) are `{ContentTypeNamespace}.{TypeName}`. That namespace is the contract between content migration and later codebase codegen. It is **not** the .NET project or client name unless the user explicitly remaps. Full rules: [content-type-namespaces.md](../../_shared/references/content-type-namespaces.md).
+
+**When to ask — no target model**: Always present this decision once. Default is preserve.
+
+**Auto-resolve — target model provided**: If target content types use a different ClassName namespace than KX13 (e.g. source `SCFTA.HomePage`, target `Segerstrom.HomePage`), select **Remap namespaces** and list every source → target ClassName. If target ClassNames keep the KX13 namespace (or the target model is silent), select **Preserve KX13 namespaces**.
+
+| Option | Description |
+| --- | --- |
+| **Preserve KX13 namespaces** (default) | Target ClassNames keep the KX13 namespace segment (e.g. `SCFTA.Article` → `SCFTA.Article`). Codegen and business code must use `SCFTA`, not the .NET `{CLIENT}` / `{ProjectName}`. Simplest alignment across content and code. |
+| **Remap namespaces** | Target ClassNames use a new namespace (often the project name). Every mapping table, `IClassMapping`, manual type, and later `--kxp-codegen` / entity reference must use the **new** ClassNames. Document `{CONTENT_TYPE_NAMESPACE}` and a full source → target ClassName list in the plan. |
+
+Record the chosen `{CONTENT_TYPE_NAMESPACE}` (or per-type remaps) in the overview's **Content Type Namespace Convention** section and reuse it for all target ClassNames, including target-only/manual types and custom tables.
+
 ### Auto-resolution rules (target model provided)
 
 When a target XbyK content model is provided, most categories can be resolved by inspecting the target model without asking the user:

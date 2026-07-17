@@ -126,7 +126,7 @@ Prompt name: **migrate-global-code**
 Migrates global code, generates code files, and sets up the project foundation. The prompt makes the following changes:
 
 - Creates a new .NET project in the target folder and marks it as [discoverable](https://docs.kentico.com/x/QoXWCQ) by Xperience.
-- Uses the code generator utility to [generate classes](https://docs.kentico.com/x/5IbWCQ) for migrated database entities (content types, etc.).
+- Uses the code generator utility to [generate classes](https://docs.kentico.com/x/5IbWCQ) for migrated database entities (content types, etc.). Generated C# namespaces and `CONTENT_TYPE_NAME` values must match registered `CMS_Class.ClassName` values from content migration — do not force `--namespace` to the .NET project name when ClassNames use a different prefix (see `skills/_shared/references/content-type-namespaces.md`).
 - Copies global project files, such as assets and resources, and global code, such as service registration and project startup logic, to the target.
 - Enables [content tree-based routing](https://docs.kentico.com/x/GoXWCQ) and [Page Builder](https://docs.kentico.com/x/6QWiCQ) on the target.
 

@@ -22,6 +22,8 @@ For each planned type:
 - Migration tool type missing → FAIL
 - Manual type missing → WARN
 - Type exists with wrong `ClassContentTypeType` → FAIL
+- Type exists but `CMS_Class.ClassName` does not **exactly** match the plan target ClassName (including namespace segment) → FAIL — namespace drift breaks later codegen / `CONTENT_TYPE_NAME` alignment (see content-type-namespaces contract)
+- Plan Content Type Namespace Convention present: any target ClassName whose namespace segment differs from `{CONTENT_TYPE_NAMESPACE}` (and is not in an explicit remap table) → FAIL
 
 Excluded classes that still exist as content types → WARN (orphaned, should be deleted — see Gotchas in SKILL.md).
 

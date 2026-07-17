@@ -14,6 +14,7 @@ Produces ready-to-use C# code files for the Migration.Tool.Extensions project. T
 ### Step 1: Read Reference Materials
 
 - Read [class-mapping-api.md](references/class-mapping-api.md) for the complete API patterns, annotated code samples, and converter snippets.
+- Read [content-type-namespaces.md](../_shared/references/content-type-namespaces.md) — every `target.ClassName` must match the plan's target ClassName / `{CONTENT_TYPE_NAMESPACE}` exactly.
 - If you need pattern examples for implementation, read [CLASS_MAPPING_EXAMPLE.cs](assets/CLASS_MAPPING_EXAMPLE.cs) for a complete annotated reference implementation showing all patterns.
 - If you need context on the migration tool's extension points or configuration, read [migration-tool.md](../_shared/references/migration-tool.md).
 - If you need documentation links, read [migration-docs.md](../_shared/references/migration-docs.md).
@@ -48,6 +49,7 @@ When the migration plan identifies `docrelationships` fields (relationship-based
 
 For each target content type, generate a static class with a builder method returning `IClassMapping`:
 
+- **Namespace lock:** Set `target.ClassName` to the plan's **exact** target ClassName (e.g. `SCFTA.HomePage`). Set `ClassTableName` to the same with underscores (`SCFTA_HomePage`). Never substitute a .NET project/client name for the content type namespace. If the plan's Content Type Namespace Convention says preserve KX13, keep the KX13 namespace segment.
 - Use `MultiClassMapping` fluent builder following the patterns in `class-mapping-api.md`.
 - `BuildField().SetFrom()` for direct field renames.
 - `BuildField().ConvertFrom()` for value transformations — include null handling and explanatory comments.
@@ -128,8 +130,9 @@ For each remaining TODO in the generated code, provide:
 - Follow exact API patterns from `class-mapping-api.md` — do not invent methods that don't exist.
 - Every `IClassMapping` and `IReusableSchemaBuilder` must have a corresponding `AddSingleton` registration.
 - Handle both structured (migration plan) and free-text input.
+- **Target `ClassName` must match the migration plan** (and [content-type-namespaces.md](../_shared/references/content-type-namespaces.md)). Do not invent or "normalize" namespaces to the solution/project name.
 - In merge scenarios, exactly one source class has `isTemplate: true` per field. Only the class's own fields use `isTemplate: true` — fields belonging to a reusable schema (e.g., `DocumentName`) must not.
-- Primary key convention: `{ShortTargetName}ID`; table name: `Namespace_ClassName` (underscores, not dots).
+- Primary key convention: `{ShortTargetName}ID`; table name: `Namespace_ClassName` (underscores, not dots) derived from the same ClassName.
 - Prefer `SetFrom` for direct field copies; use `ConvertFrom` only when value transformation is needed.
 - `ConvertFrom` converters must handle null and unexpected types defensively with explanatory comments.
 - `WithoutSource` fields must have `AllowEmpty = true`.

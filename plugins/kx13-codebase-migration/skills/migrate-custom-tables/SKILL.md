@@ -16,10 +16,20 @@ This skill migrates a single KX13 custom table (e.g. `SCFTA.ConfigSettings`) int
 functional xByK **Reusable** content hub content type. It produces:
 
 1. A `CMS_Class` row (content type registration)
-2. A backing SQL table (`{LegacyPrefix}_{TypeName}`)
+2. A backing SQL table (`{CONTENT_TYPE_NAMESPACE}_{TypeName}`)
 3. A C# entity class in `{ProjectName}.Entities/ReusableContentTypes/{TypeName}/`
 4. A content hub workspace (existing or newly created) and folder for the items
 5. Migrated data rows as published content items
+
+## Parameters
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `{ProjectName}` | .NET Entities **project** name (assembly/folder) | `Segerstrom` |
+| `{CONTENT_TYPE_NAMESPACE}` | ClassName / C# namespace — must match migrated page types | `SCFTA` |
+| `{TypeName}` | Content type name segment | `AppConfigSetting` |
+
+Resolve `{CONTENT_TYPE_NAMESPACE}` from the migration plan, existing `CONTENT_TYPE_NAME` constants in `{ProjectName}.Entities`, or `CMS_Class.ClassName` for already-migrated page types. **Do not default it to `{ProjectName}`** when page types use a different namespace. See [content-type-namespaces.md](../_shared/references/content-type-namespaces.md).
 
 ## Structure of the projects
 
@@ -33,11 +43,12 @@ You are currently located in the root folder, which contains two subfolders:
 
 - **xByK database**: get the connection string from the XbyK application
 - **KX13 database**: get the connection string from the KX13 application
-- **KX13 custom tables** live in the xByK database as `SCFTA_*` tables (already migrated by the migration tool)
+- **KX13 custom tables** live in the xByK database as `{LegacyPrefix}_*` tables (already migrated by the migration tool)
 - **Workspace**: resolve via Step 1 (do **not** hardcode `KenticoDefault` / ID `1`)
 - **Default language ID**: query `CMS_ContentLanguage WHERE ContentLanguageIsDefault = 1`
 - **Default user**: query `CMS_User WHERE UserName = 'administrator'`
 - **Entity project**: `{ProjectName}.Entities/{ProjectName}.Entities.csproj` (targets `net10.0`, uses `CMS.AssemblyDiscoverableAttribute`)
+- **Namespace alignment**: new types use `{CONTENT_TYPE_NAMESPACE}.{TypeName}` so they match page-type ClassNames already in the database
 
 ## Step-by-step Workflow
 
@@ -147,8 +158,8 @@ Identify the **user columns** (skip the `Item*` system columns). These become co
 
 ### Step 3: Choose the xByK Type Name
 
-- Pick a name like `{ProjectName}.{TypeName}` (e.g. `Segerstrom.AppConfigSetting`)
-- The C# class will be `{TypeName}` in namespace `{ProjectName}`
+- Pick a ClassName like `{CONTENT_TYPE_NAMESPACE}.{TypeName}` (e.g. `SCFTA.AppConfigSetting` when page types are `SCFTA.*` — **not** `Segerstrom.AppConfigSetting` unless the plan remapped namespaces to `Segerstrom`)
+- The C# class will be `{TypeName}` in namespace `{CONTENT_TYPE_NAMESPACE}`
 - **CRITICAL**: Check for name collisions with existing classes in `{ProjectName}.Business` and
   the Tessitura SDK. Search the codebase: `class {TypeName}`. If there's a collision, pick a
   different name (prefix with `App`, `Site`, etc.)
@@ -166,9 +177,9 @@ Required columns and their values:
 
 | Column | Value |
 |--------|-------|
-| `ClassName` | `{ProjectName}.{TypeName}` |
+| `ClassName` | `{CONTENT_TYPE_NAMESPACE}.{TypeName}` |
 | `ClassDisplayName` | Human-readable name |
-| `ClassTableName` | `{ProjectName}_{TypeName}` |
+| `ClassTableName` | `{CONTENT_TYPE_NAMESPACE}_{TypeName}` |
 | `ClassXmlSchema` | See template below |
 | `ClassFormDefinition` | See template below |
 | `ClassType` | `Content` |
@@ -178,7 +189,7 @@ Required columns and their values:
 | `ClassHasUnmanagedDbSchema` | `0` |
 | `ClassWebPageHasUrl` | `0` |
 | `ClassLastModified` | `GETUTCDATE()` |
-| `ClassShortName` | `Segerstrom{TypeName}` |
+| `ClassShortName` | `{CONTENT_TYPE_NAMESPACE}{TypeName}` |
 
 #### ClassXmlSchema template
 
@@ -263,20 +274,20 @@ Form field type mapping:
 #### 4b. Backing SQL table
 
 ```sql
-CREATE TABLE {ProjectName}_{TypeName} (
+CREATE TABLE {CONTENT_TYPE_NAMESPACE}_{TypeName} (
     ContentItemDataID           INT              NOT NULL IDENTITY(1,1) PRIMARY KEY,
     ContentItemDataCommonDataID INT              NOT NULL,
     ContentItemDataGUID         UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
     -- user columns here (use [brackets] for SQL reserved words like [Key], [Value], [Order]) --
-    CONSTRAINT FK_{ProjectName}_{TypeName}_CommonData
+    CONSTRAINT FK_{CONTENT_TYPE_NAMESPACE}_{TypeName}_CommonData
         FOREIGN KEY (ContentItemDataCommonDataID)
         REFERENCES CMS_ContentItemCommonData (ContentItemCommonDataID)
 );
 
-CREATE UNIQUE NONCLUSTERED INDEX UQ_{ProjectName}_{TypeName}_GUID
-    ON {ProjectName}_{TypeName} (ContentItemDataGUID);
-CREATE NONCLUSTERED INDEX IX_{ProjectName}_{TypeName}_CommonDataID
-    ON {ProjectName}_{TypeName} (ContentItemDataCommonDataID);
+CREATE UNIQUE NONCLUSTERED INDEX UQ_{CONTENT_TYPE_NAMESPACE}_{TypeName}_GUID
+    ON {CONTENT_TYPE_NAMESPACE}_{TypeName} (ContentItemDataGUID);
+CREATE NONCLUSTERED INDEX IX_{CONTENT_TYPE_NAMESPACE}_{TypeName}_CommonDataID
+    ON {CONTENT_TYPE_NAMESPACE}_{TypeName} (ContentItemDataCommonDataID);
 ```
 
 ### Step 5: Create the C# Entity Class
@@ -288,12 +299,12 @@ using System;
 using System.Collections.Generic;
 using CMS.ContentEngine;
 
-namespace {ProjectName}
+namespace {CONTENT_TYPE_NAMESPACE}
 {
     [RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
     public partial class {TypeName} : IContentItemFieldsSource
     {
-        public const string CONTENT_TYPE_NAME = "{ProjectName}.{TypeName}";
+        public const string CONTENT_TYPE_NAME = "{CONTENT_TYPE_NAMESPACE}.{TypeName}";
 
         [SystemField]
         public ContentItemFields SystemFields { get; set; }
@@ -378,7 +389,7 @@ four tables in this order:
     | `ContentItemLanguageMetadataHasImageAsset` | `0` |
     | `ContentItemLanguageMetadataContentLanguageID` | `@DefaultLanguageId` |
 
-4. **{ProjectName}_{TypeName}** — the type-specific data table
+4. **{CONTENT_TYPE_NAMESPACE}_{TypeName}** — the type-specific data table
 
     | Column | Value |
     |--------|-------|
@@ -401,7 +412,8 @@ Skip already-migrated rows by checking `ContentItemGUID` existence.
 - **`ContentItemWorkspaceID`** must be the resolved `@WorkspaceID` on every `CMS_ContentItem` row — if NULL, items are invisible in the content hub. Do not hardcode `1` unless the user explicitly chose that workspace
 - **New workspaces need a root folder**: inserting only into `CMS_Workspace` is not enough — create the root `CMS_ContentFolder` (`ParentFolderID IS NULL`, `TreePath = '/'`) for that workspace before adding type folders
 - **`ContentItemCommonDataFirstPublishedWhen`** should be set to `GETUTCDATE()` for published items
-- **Name collisions**: The C# class lives in namespace `{ProjectName}` which is a parent namespace of `{ProjectName}.Business`. Any class name that matches an existing type in the Tessitura SDK or business layer will cause build errors. Always search first.
+- **Namespace must match page types**: `ClassName`, SQL table name, C# `namespace`, and `CONTENT_TYPE_NAME` all use `{CONTENT_TYPE_NAMESPACE}`, not `{ProjectName}`, unless the migration plan remapped everything to `{ProjectName}`
+- **Name collisions**: The C# class lives in namespace `{CONTENT_TYPE_NAMESPACE}`. Any class name that matches an existing type in the Tessitura SDK or business layer will cause build errors. Always search first.
 - **SQL reserved words**: Columns like `Key`, `Value`, `Order`, `Index` need `[brackets]` in SQL
 - **`SET QUOTED_IDENTIFIER ON`**: Required at the top of every SQL script for xByK
 - **Form field GUIDs**: Each `<field>` needs a unique GUID — generate deterministic ones or use `NEWID()` style

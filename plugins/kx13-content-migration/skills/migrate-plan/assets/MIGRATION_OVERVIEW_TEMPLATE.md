@@ -1,5 +1,17 @@
 # Migration Overview — [Project Name]
 
+## Content Type Namespace Convention
+
+> Registered ClassNames (`Namespace.TypeName`) are the source of truth for content **and** generated code. Project/assembly names may differ. See content-type-namespaces contract.
+
+| Decision | Value |
+| -------- | ----- |
+| Policy | [Preserve KX13 namespaces / Remap namespaces] |
+| `{CONTENT_TYPE_NAMESPACE}` | [e.g. SCFTA — or list if multiple] |
+| Notes for codebase migration | [e.g. "Do not pass `--namespace Segerstrom` to codegen; entity C# namespace is SCFTA"] |
+
+<!-- If remapping, add a Source ClassName → Target ClassName table here. -->
+
 ## Manual Steps
 
 ### Pre-Migration

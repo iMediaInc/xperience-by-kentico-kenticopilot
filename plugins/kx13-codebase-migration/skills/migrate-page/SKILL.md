@@ -23,6 +23,8 @@ You are currently located in the root folder, which contains two subfolders:
 
 When migrating a page, ensure that everything that was fetched dynamically from the database will still be dynamically fetched from the database. Nothing can be statically hardcoded in the new project if it was dynamic in the legacy project.
 
+**Content type namespaces:** Page entity types must use the registered ClassName namespace from `{ProjectName}.Entities` (see each type's `CONTENT_TYPE_NAME` and C# `namespace`). Do not rewrite references to the .NET project/client name when it differs (e.g. use `SCFTA.HomePage` when ClassName is `SCFTA.HomePage`, not `Segerstrom.HomePage`). See [content-type-namespaces.md](../_shared/references/content-type-namespaces.md).
+
 ## Useful Documentation
 
 - Use Kentico Docs MCP to read the following pages:

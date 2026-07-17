@@ -16,7 +16,8 @@ Before starting, collect these values from the user. Use them everywhere you see
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
-| `{CLIENT}` | Client/project name used in namespaces and project names | `Segerstrom` |
+| `{CLIENT}` | Client/project name used in **project/assembly** names (not necessarily content type ClassNames) | `Segerstrom` |
+| `{CONTENT_TYPE_NAMESPACE}` | C# / ClassName namespace of generated entity types — must match registered `CMS_Class.ClassName` prefixes | `SCFTA` |
 | `{KX13_SOURCE}` | Relative path to the KX13 business layer project | `kx13/Segerstrom.Business` |
 | `{XBYK_WEB}` | Relative path to the xByK web project | `xbky` |
 | `{KX13_CODENAME_PREFIX}` | KX13 document type code name prefix (usually the site code) | `SCFTA` |
@@ -30,11 +31,19 @@ Before starting, collect these values from the user. Use them everywhere you see
 
 If the user does not specify values, inspect the KX13 `.csproj` file at `{KX13_SOURCE}` to discover them: read the `<RootNamespace>`, package references, and connected services.
 
+**Resolve `{CONTENT_TYPE_NAMESPACE}` before migrating** (see [content-type-namespaces.md](../_shared/references/content-type-namespaces.md)):
+
+1. Migration plan Content Type Namespace Convention / target ClassNames
+2. `CONTENT_TYPE_NAME` constants in `{CLIENT}.Entities` (authoritative after codegen)
+3. `CMS_Class.ClassName` in the XbyK database
+
+Default when content migration preserved KX13 names: `{CONTENT_TYPE_NAMESPACE}` = `{KX13_CODENAME_PREFIX}`. **Never default `{CONTENT_TYPE_NAMESPACE}` to `{CLIENT}`** unless the plan remapped ClassNames to `{CLIENT}` and Entities were generated that way.
+
 ## Prerequisites
 
 - Source KX13 project at `{KX13_SOURCE}/`
 - Target xByK web project at `{XBYK_WEB}/`
-- `{CLIENT}.Entities` project with xByK-generated content types in the `{CLIENT}` namespace
+- `{CLIENT}.Entities` project with xByK-generated content types whose C# namespace and `CONTENT_TYPE_NAME` match registered ClassNames (`{CONTENT_TYPE_NAMESPACE}.*`)
 
 ## Phase 1: Scaffold the .NET 10 Project
 
@@ -105,7 +114,7 @@ Migrate in dependency order — each phase builds on the last:
 3. **Tessitura models** — POCOs, minor deps
 4. **Custom table POCOs** — replace KX13 `CustomTableItem` subclasses
 5. **ContentQueryService** — replaces all KX13 generated providers
-6. **Content type extensions** — replace generated partials with extension methods on `{CLIENT}.*` entity types
+6. **Content type extensions** — replace generated partials with extension methods on `{CONTENT_TYPE_NAMESPACE}.*` entity types
 7. **Extensions** — depend on models, config, Tessitura SDK
 8. **Algolia models + repositories** (if `{HAS_ALGOLIA}`)
 9. **Core services** — depend on everything above
@@ -146,7 +155,7 @@ Migrate in dependency order — each phase builds on the last:
 
 | KX13 | xByK |
 |------|------|
-| `CMS.DocumentEngine.Types.{KX13_CODENAME_PREFIX}.*` | `{CLIENT}.*` (from `{CLIENT}.Entities`) |
+| `CMS.DocumentEngine.Types.{KX13_CODENAME_PREFIX}.*` | `{CONTENT_TYPE_NAMESPACE}.*` (from `{CLIENT}.Entities` — often same as `{KX13_CODENAME_PREFIX}`, not `{CLIENT}`) |
 | `DocumentQuery<T>` / `*Provider.Get*()` | `ContentQueryService` wrapping `IContentQueryExecutor` |
 | `TreeNode` props (`NodeID`, `NodeAliasPath`, `NodeGUID`) | `IWebPageFieldsSource.SystemFields` (`WebPageItemID`, `WebPageItemTreePath`, `WebPageItemGUID`) |
 | `CustomTableItem` / `CustomTableItemProvider` | POCO models in `Models/CustomTables/` |
@@ -216,7 +225,7 @@ public class ContentQueryService
 }
 ```
 
-For each content type in `{CLIENT}.Entities`, add typed convenience methods like `GetProductionDetailsAsync()`, `GetVenuesAsync()`, etc. Map every KX13 provider method to a new async method here.
+For each content type in `{CLIENT}.Entities`, add typed convenience methods like `GetProductionDetailsAsync()`, `GetVenuesAsync()`, etc. Map every KX13 provider method to a new async method here. Use `SomeType.CONTENT_TYPE_NAME` for query type names — never hardcode `"{CLIENT}.SomeType"` when ClassName is `"{CONTENT_TYPE_NAMESPACE}.SomeType"`.
 
 ## Phase 6: EventHandlers
 
@@ -291,7 +300,8 @@ Target: **0 errors** across all three projects. Iterate until clean.
 |-------|-----|
 | `CS0120: object reference required for non-static member` | Service was `static` in KX13, now instance. Add `static Instance` property or pass via DI. |
 | `CS0029: Cannot convert TessituraLogger to iLogger` | Make `TessituraLogger` implement `iMedia.Tess.Api.Interfaces.iLogger` |
-| `CS0234: 'Entities' does not exist in namespace '{CLIENT}'` | Use `{CLIENT}.TypeName` not `{CLIENT}.Entities.PageContentTypes.TypeName.TypeName` |
+| `CS0234: 'Entities' does not exist in namespace '{CLIENT}'` | Entity types live under `{CONTENT_TYPE_NAMESPACE}` (e.g. `SCFTA.HomePage`), not `{CLIENT}.Entities.PageContentTypes...` and not necessarily `{CLIENT}.HomePage` |
+| `CS0246: type or namespace '{CLIENT}' not found` (for a page type) | Wrong content type namespace — check generated `CONTENT_TYPE_NAME` / `namespace` in Entities and use `{CONTENT_TYPE_NAMESPACE}` |
 | `CS0436: type conflicts with imported type` | Delete the compatibility shim — real xByK type exists in `Kentico.Xperience.Core` |
 | `CS1061: type missing a property from KX13` | Add property to partial class in `{CLIENT}.Entities` or as extension method |
 | `CS1503: WCF constructor string→Binding` | Remove string-based `ClientBase<T>` constructors, keep `(Binding, EndpointAddress)` only |
