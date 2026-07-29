@@ -1,0 +1,31 @@
+---
+name: "automation-trigger"
+description: "Reference for implementing custom automation triggers in Xperience by Kentico. Use whenever the user wants an automation process to start from application code — a purchase, an incoming webhook, an event handler, or a scheduled task — optionally carrying typed data into the process and configurable by marketers through properties."
+compatibility: "Requires Kentico Docs MCP"
+---
+
+This skill points you to Kentico's automation-customization documentation. Use it to implement a custom automation trigger and fire it from the project's code.
+
+## Pieces of a custom trigger
+
+- **Trigger class** – inherits `AutomationTrigger` (no data), `AutomationTrigger<TData>`, or `AutomationTrigger<TData, TProperties>` (marketer-configurable); overrides `Evaluate` to decide whether the process starts.
+- **Trigger data** – implements `IAutomationTriggerData` with a stable `Identifier`; JSON-serialized with the process state and read by later steps through `AutomationProcessContext.GetTriggerData<T>()`.
+- **Properties class** – implements `IAutomationTriggerProperties`; public properties annotated with admin UI form components define the configuration dialog marketers see when they pick the trigger.
+- **Registration** – the `RegisterAutomationTrigger<TTrigger>` assembly attribute (identifier, display name, icon, description) makes the trigger selectable in the Automation Builder.
+- **Dispatch** – `IAutomationTriggerDispatcher.FireTrigger<TTrigger>` with an `AutomationTriggerDispatch` built from a `ContactInfo` and, for data-carrying triggers, the trigger data.
+
+## How to use
+
+- Read `references/docs.md` and fetch the docs pages listed there.
+- A trigger class alone does nothing. Confirm with the user where the trigger fires — event handler, controller, webhook endpoint, or scheduled task — and wire the `FireTrigger` call into that code path.
+
+## Gotcha
+
+- Triggers operate on contacts — the object dispatched must be a `ContactInfo`.
+- Trigger classes must be stateless; one instance serves every evaluation. `Evaluate` is cancelled after two minutes, and the process then does not start.
+- Never change a trigger's `identifier` or a trigger data class's `Identifier` after deployment. Adding optional data properties is safe; removing or renaming them breaks deserialization, and steps then receive `null`. Version by registering a new trigger alongside the old one.
+- Keep trigger data small and free of personal data — carry identifiers, not names, e-mail addresses, or keys. `DateTime` values round-trip as UTC.
+- `FireTrigger` enqueues and returns immediately. The queue is bounded (`CMSAutomationTriggerQueueCapacity`) and drops triggers with a warning when saturated; it is a silent no-op when no process uses the trigger, and throws `InvalidOperationException` for an unregistered trigger or data of the wrong type.
+- Don't fire triggers from inside a custom automation step — log a custom activity and let the built-in step do it.
+- Form-component and validation attributes come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces — never from `Kentico.Forms.Web.Mvc`, an obsolete Form Builder namespace with matching class names.
+- Prefer using `ILogger<T>` for logging instead of `EventLogService`.
