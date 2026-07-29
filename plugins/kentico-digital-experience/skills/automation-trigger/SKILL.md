@@ -21,11 +21,9 @@ This skill points you to Kentico's automation-customization documentation. Use i
 
 ## Gotcha
 
-- Triggers operate on contacts — the object dispatched must be a `ContactInfo`.
-- Trigger classes must be stateless; one instance serves every evaluation. `Evaluate` is cancelled after two minutes, and the process then does not start.
 - Never change a trigger's `identifier` or a trigger data class's `Identifier` after deployment. Adding optional data properties is safe; removing or renaming them breaks deserialization, and steps then receive `null`. Version by registering a new trigger alongside the old one.
-- Keep trigger data small and free of personal data — carry identifiers, not names, e-mail addresses, or keys. `DateTime` values round-trip as UTC.
-- `FireTrigger` enqueues and returns immediately. The queue is bounded (`CMSAutomationTriggerQueueCapacity`) and drops triggers with a warning when saturated; it is a silent no-op when no process uses the trigger, and throws `InvalidOperationException` for an unregistered trigger or data of the wrong type.
+- Trigger classes must be stateless; one instance serves every evaluation, which is cancelled after two minutes.
+- Keep trigger data small and free of personal data — carry identifiers, not names, e-mail addresses, or keys.
 - Don't fire triggers from inside a custom automation step — log a custom activity and let the built-in step do it.
 - Form-component and validation attributes come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces — never from `Kentico.Forms.Web.Mvc`, an obsolete Form Builder namespace with matching class names.
 - Prefer using `ILogger<T>` for logging instead of `EventLogService`.
