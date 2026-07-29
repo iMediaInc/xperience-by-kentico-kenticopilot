@@ -11,8 +11,7 @@ This skill points you to Kentico's automation-customization documentation. Use i
 - **Trigger class** – inherits `AutomationTrigger` (no data), `AutomationTrigger<TData>`, or `AutomationTrigger<TData, TProperties>` (marketer-configurable); overrides `Evaluate` to decide whether the process starts.
 - **Trigger data** – implements `IAutomationTriggerData` with a stable `Identifier`; JSON-serialized with the process state and read by later steps through `AutomationProcessContext.GetTriggerData<T>()`.
 - **Properties class** – implements `IAutomationTriggerProperties`; public properties annotated with admin UI form components define the configuration dialog marketers see when they pick the trigger.
-- **Registration** – the `RegisterAutomationTrigger<TTrigger>` assembly attribute (identifier, display name, icon, description) makes the trigger selectable in the Automation Builder.
-- **Dispatch** – `IAutomationTriggerDispatcher.FireTrigger<TTrigger>` with an `AutomationTriggerDispatch` built from a `ContactInfo` and, for data-carrying triggers, the trigger data.
+- **Registration** – the generic `RegisterAutomationTrigger<TTrigger>` assembly attribute makes the trigger selectable in the Automation Builder.
 
 ## How to use
 
@@ -25,5 +24,6 @@ This skill points you to Kentico's automation-customization documentation. Use i
 - Trigger classes must be stateless; one instance serves every evaluation, which is cancelled after two minutes.
 - Keep trigger data small and free of personal data — carry identifiers, not names, e-mail addresses, or keys.
 - Don't fire triggers from inside a custom automation step — log a custom activity and let the built-in step do it.
+- Every trigger type lives in `CMS.Automation`. Only the form-component attributes on the properties class come from elsewhere.
 - Form-component and validation attributes come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces — never from `Kentico.Forms.Web.Mvc`, an obsolete Form Builder namespace with matching class names.
 - Prefer using `ILogger<T>` for logging instead of `EventLogService`.
