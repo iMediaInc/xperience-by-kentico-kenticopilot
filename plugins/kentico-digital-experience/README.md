@@ -2,13 +2,16 @@
 
 Extend the digital marketing features of Xperience by Kentico with custom components, written by your AI coding assistant.
 
-Marketers configure these features using the component types available to them. When they need behavior Xperience doesn't provide out of the box, such as posting to a chat channel or calling an internal service, a developer adds a custom component. This plugin hands that work to your coding assistant. You explain what the component does and which settings marketers control, and the agent writes the implementation together with the registration that makes it available in the admin UI.
+Marketers configure these features using the component types available to them. When they need behavior Xperience doesn't provide out of the box, such as posting to a chat channel, calling an internal service, or starting a process the moment an order is paid, a developer adds a custom component — a step inside a process, or the trigger that starts it. This plugin hands that work to your coding assistant. You explain what the component does and which settings marketers control, and the agent writes the implementation together with the registration that makes it available in the admin UI.
 
 ## Choose a skill
 
 | Skill | Use it to |
 |---|---|
 | `automation-action` | Implement and register a custom automation action, with optional marketer-configurable properties |
+| `automation-trigger` | Implement and register a custom automation trigger, and fire it from your application code |
+
+The two skills meet in one process: a trigger decides when the process starts and what data it carries, and actions are the steps that run afterwards, reading that data as they go. Build the trigger first when the starting event is the custom part.
 
 For the other kinds of automation customization, see the [customization overview](https://docs.kentico.com/x/automation_custom_xp).
 
@@ -20,7 +23,12 @@ For the other kinds of automation customization, see the [customization overview
 - An Xperience by Kentico project with [Automation](https://docs.kentico.com/x/automation_xp) in use
 - An AI coding assistant with this plugin installed
 - The [Documentation MCP server](https://docs.kentico.com/x/mcp_server_xp), configured as described in [MCP setup](./MCP-setup.md)
-- A description of what the step does, and of any settings marketers need to change
+- A description of what the component does, and of any settings marketers need to change
+
+Additionally, `automation-trigger` requires:
+
+- The code path that should start the process — an event handler, a controller or webhook endpoint, or a scheduled task
+- The contact the process applies to, and any data the trigger passes into it
 
 ## Install
 
@@ -49,6 +57,29 @@ This sequence produces one working action, configurable by marketers. See the ot
 5. Build the project and restart the application, then open the **Automation** application and add your step to a process. Confirm the step appears under its display name and that its properties render in the configuration dialog.
 
 At this point the step is available to every marketer working in the Automation Builder, and it runs for each contact that reaches it.
+
+## Build your first trigger
+
+A trigger is two halves: the class marketers select in the Automation Builder, and the call in your code that fires it. The agent writes both.
+
+1. Describe the event, the data it carries, and where in the code it happens.
+
+   ```text
+   /automation-trigger
+
+   Create a trigger that starts a process when a customer completes a
+   purchase, carrying the order number, total, and currency. Marketers
+   need to set a minimum order total. Fire it from the checkout
+   controller after the payment is confirmed.
+   ```
+
+2. Answer the design questions. Expect the agent to confirm which contact the trigger applies to and which data the process needs from the event.
+
+3. Review the generated code, including the dispatch call the agent added to your own class. Read [Review the output](#review-the-output).
+
+4. Build the project and restart the application, then open the **Automation** application and create a process that starts from your trigger.
+
+5. Exercise the code path — place an order, raise the event, or run the scheduled task — and confirm the process starts for the expected contact.
 
 ## Common tasks
 
@@ -83,6 +114,28 @@ Add a retry-count setting to the CrmSyncAction, editable by marketers,
 with a default of 3 and a maximum of 10.
 ```
 
+### Pass data from a trigger into the process
+
+Data set when the trigger fires stays available to every step of the process.
+
+```text
+/automation-trigger
+
+Extend the PurchaseTrigger to carry the order number and the sales
+channel, and read both in the CrmSyncAction step.
+```
+
+### Fire an existing trigger on a schedule
+
+Time-based automation is a scheduled task that fires the trigger for each matching contact.
+
+```text
+/automation-trigger
+
+Add a scheduled task that fires the SubscriptionExpiringTrigger once a
+day for every contact whose subscription ends within seven days.
+```
+
 ## Write effective prompts
 
 Both of these prompts produce a working output. However, providing the agent with more context significantly reduces guesswork and increases output quality and standards adherence. Compare:
@@ -91,6 +144,8 @@ Both of these prompts produce a working output. However, providing the agent wit
 |---|---|
 | `Create an action that sends an email` | The agent works out the recipient, the source of the content, and which parts marketers control. Expect several rounds of questions. |
 | `Create an action that sends the contact a transactional email chosen by the marketer from a dropdown of published email templates` | The agent proposes a design right away and asks only about what you left open. |
+| `Create a trigger for purchases` | The agent works out the event, the data the process needs, and which class fires it. Expect several rounds of questions. |
+| `Create a trigger fired from OrderController.Confirm that carries the order number and total, and only starts the process above a marketer-set minimum` | The agent knows the firing location, the payload, and the one marketer-facing setting. |
 
 > [!TIP]
 > The same applies to every KentiCopilot skill. See [Write specific prompts](../../docs/Usage-Guide.md#write-specific-prompts) for the general guidance, including the habits that slow a session down.
@@ -101,7 +156,13 @@ Treat generated code the way you'd treat a pull request from someone new to the 
 
 **Form annotation namespace** -- The [form component](https://docs.kentico.com/x/8ASiCQ) attributes that build the configuration dialog need to come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces. An obsolete Form Builder namespace, `Kentico.Forms.Web.Mvc`, contains attributes with the same names. Check the `using` directives on the properties class.
 
-**Execution time limit** -- Actions are cancelled after two minutes, so a step calling a slow external service can be cut off mid-run. If the generated code talks to anything outside the application, read [Best practices](https://docs.kentico.com/x/automation_custom_steps_xp) for the timeout behavior and what to do instead.
+**Execution time limit** -- Actions are cancelled after two minutes, so a step calling a slow external service can be cut off mid-run. If the generated code talks to anything outside the application, read [Best practices](https://docs.kentico.com/x/automation_custom_steps_xp) for the timeout behavior and what to do instead. The same limit applies to a trigger's evaluation, and a trigger that runs out of time does not start its process.
+
+**Trigger identifiers** -- The identifier on the registration attribute, and the one on the trigger data class, are permanent. Changing either after marketers have built processes on the trigger breaks those processes. Renaming or removing a data property has the same effect, and the affected steps then receive no data. Check that the generated identifiers are ones you can live with, and that they carry a prefix unique to your project.
+
+**Trigger data** -- Trigger data is serialized and stored with the process. Keep it to identifiers the process can resolve later, and keep personal data such as names and e-mail addresses out of it.
+
+**Firing location** -- Confirm the dispatch call sits where the business event actually completes, and that it isn't inside a custom automation step. Firing is fire-and-forget from a bounded queue, so the call returns before the process starts and tells you nothing about whether it did.
 
 Other things to keep an eye on during review:
 
