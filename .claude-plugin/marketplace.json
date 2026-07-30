@@ -13,7 +13,7 @@
     {
       "name": "kentico-digital-experience",
       "source": "./plugins/kentico-digital-experience",
-      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions that add custom step types to the Automation Builder and Automation triggers that start processes from application code",
+      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions and conditions that add custom step types to the Automation Builder and Automation triggers that start processes from application code",
       "version": "1.1.0",
       "author": {
         "name": "Kentico"
@@ -21,7 +21,7 @@
       "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-digital-experience",
       "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
       "license": "MIT",
-      "keywords": ["kentico", "xperience", "digital-experience", "automation", "automation-builder", "automation-action", "automation-trigger", "marketing", "cms"],
+      "keywords": ["kentico", "xperience", "digital-experience", "automation", "automation-builder", "automation-action", "automation-condition", "automation-trigger", "marketing", "cms"],
       "strict": false
     },
     {
