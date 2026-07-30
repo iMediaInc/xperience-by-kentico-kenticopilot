@@ -73,7 +73,7 @@ A trigger is two halves: the class marketers select in the Automation Builder, a
    controller after the payment is confirmed.
    ```
 
-2. Answer the design questions. Expect the agent to confirm which contact the trigger applies to and how the process should behave when the same contact purchases twice.
+2. Answer the design questions. Expect the agent to confirm which contact the trigger applies to and which data the process needs from the event.
 
 3. Review the generated code, including the dispatch call the agent added to your own class. Read [Review the output](#review-the-output).
 

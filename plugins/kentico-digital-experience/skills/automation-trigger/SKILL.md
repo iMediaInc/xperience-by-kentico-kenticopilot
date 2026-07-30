@@ -21,9 +21,9 @@ This skill points you to Kentico's automation-customization documentation. Use i
 ## Gotcha
 
 - Never change a trigger's `identifier` or a trigger data class's `Identifier` after deployment. Adding optional data properties is safe; removing or renaming them breaks deserialization, and steps then receive `null`. Version by registering a new trigger alongside the old one.
-- Trigger classes must be stateless; one instance serves every evaluation, which is cancelled after two minutes.
+- Trigger classes must be stateless; one instance serves every evaluation.
 - Keep trigger data small and free of personal data — carry identifiers, not names, e-mail addresses, or keys.
 - Don't fire triggers from inside a custom automation step — log a custom activity and let the built-in step do it.
 - Every trigger type lives in `CMS.Automation`. Only the form-component attributes on the properties class come from elsewhere.
 - Form-component and validation attributes come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces — never from `Kentico.Forms.Web.Mvc`, an obsolete Form Builder namespace with matching class names.
-- Prefer using `ILogger<T>` for logging instead of `EventLogService`.
+- Use `ILogger<T>` for logging. `EventLogService` is obsolete — don't use it.
