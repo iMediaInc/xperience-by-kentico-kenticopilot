@@ -21,6 +21,6 @@ This skill points you to Kentico's automation-customization documentation. Use i
 ## Gotcha
 
 - Keep `Evaluate` read-only and idempotent — a condition can be re-evaluated for the same contact, so side effects belong in an action.
-- Both an unhandled exception and the two-minute timeout resolve the condition to `false`, so design the false branch as the safe fallback path.
+- Both an unhandled exception and the two-minute timeout resolve the condition to `false`, indistinguishable from a genuine no — handle the failures you can inside `Evaluate`, log them, and return a deliberate result.
 - Form-component and validation attributes come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces — never from `Kentico.Forms.Web.Mvc`, an obsolete Form Builder namespace with matching class names.
-- Prefer using `ILogger<T>` for logging instead of `EventLogService`.
+- Use `ILogger<T>` for logging. `EventLogService` is obsolete — don't use it.

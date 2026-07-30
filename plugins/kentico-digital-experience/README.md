@@ -125,7 +125,7 @@ of our internal domains. No marketer-facing settings.
 
 ### Branch on data produced by an earlier step
 
-Name the action that stores the data. The agent wires the condition to read the same process data type instead of fetching the value again.
+Name the action that stores the data, so the agent wires the condition to the same process data type.
 
 ```text
 /automation-condition
@@ -163,11 +163,11 @@ Treat generated code the way you'd treat a pull request from someone new to the 
 
 **Form annotation namespace** -- The [form component](https://docs.kentico.com/x/8ASiCQ) attributes that build the configuration dialog need to come from the `Kentico.Xperience.Admin.*.FormAnnotations` namespaces. An obsolete Form Builder namespace, `Kentico.Forms.Web.Mvc`, contains attributes with the same names. Check the `using` directives on the properties class.
 
-**Execution time limit** -- Actions are cancelled after two minutes, so a step calling a slow external service can be cut off mid-run. If the generated code talks to anything outside the application, read [Best practices](https://docs.kentico.com/x/automation_custom_steps_xp) for the timeout behavior and what to do instead.
+**Execution time limit** -- Custom steps are cancelled after two minutes, an action's `Execute` and a condition's `Evaluate` alike, so a step calling a slow external service can be cut off mid-run. If the generated code talks to anything outside the application, read [Best practices](https://docs.kentico.com/x/automation_custom_steps_xp) for the timeout behavior and what to do instead.
 
 **Side effects in a condition** -- A condition evaluates and returns a result, nothing more. The same contact can be evaluated more than once, so anything the generated `Evaluate` method writes, sends, or stores happens repeatedly. Move that work into an action.
 
-**The false branch as the failure path** -- A condition that times out or throws resolves to `false`, which makes the false branch the path contacts take when something goes wrong, not only when the answer is genuinely no. Check that the branch is a safe place to land.
+**Failures resolve to `false`** -- An unhandled exception and the two-minute timeout both make the condition return `false`, indistinguishable from a genuine no. Check that the generated `Evaluate` handles the failures it can, logs them, and returns a value it chose deliberately.
 
 Other things to keep an eye on during review:
 
