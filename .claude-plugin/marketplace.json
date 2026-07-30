@@ -6,22 +6,22 @@
   },
   "metadata": {
     "description": "Agent plugins that teach AI coding assistants how to build, migrate, and maintain Xperience by Kentico projects",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "pluginRoot": "./plugins"
   },
   "plugins": [
     {
       "name": "kentico-digital-experience",
       "source": "./plugins/kentico-digital-experience",
-      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions that add custom step types to the Automation Builder",
-      "version": "1.0.0",
+      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions and conditions that add custom step types to the Automation Builder and Automation triggers that start processes from application code",
+      "version": "1.1.0",
       "author": {
         "name": "Kentico"
       },
       "homepage": "https://github.com/Kentico/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-digital-experience",
       "repository": "https://github.com/Kentico/xperience-by-kentico-kenticopilot",
       "license": "MIT",
-      "keywords": ["kentico", "xperience", "digital-experience", "automation", "automation-builder", "automation-action", "marketing", "cms"],
+      "keywords": ["kentico", "xperience", "digital-experience", "automation", "automation-builder", "automation-action", "automation-condition", "automation-trigger", "marketing", "cms"],
       "strict": false
     },
     {
