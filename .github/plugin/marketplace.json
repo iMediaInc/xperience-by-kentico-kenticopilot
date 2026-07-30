@@ -13,7 +13,7 @@
     {
       "name": "kentico-digital-experience",
       "source": "./kentico-digital-experience",
-      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions and conditions that add custom step types to the Automation Builder" and Automation triggers that start processes from application code",
+      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions and conditions that add custom step types to the Automation Builder and Automation triggers that start processes from application code",
       "version": "1.1.0",
       "author": {
         "name": "Kentico"
