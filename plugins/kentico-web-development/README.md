@@ -66,7 +66,7 @@ This sequence takes a design through a content model, the components that render
 4. Review the proposal, then ask the agent to apply the approved model and generate the model classes your code binds to.
 
    ```text
-   Create the approved content types, reusable field schemas, and 
+   Create the approved content types, reusable field schemas, and
    taxonomies in my local instance, then generate the model classes.
    Use the Management MCP server.
    ```
@@ -134,11 +134,11 @@ Both of these prompts produce a working output. However, providing the agent wit
 
 Carefully review all generated output, paying particular attention to:
 
-**Generated content model** -- Unless given specific and detailed instructions, a content model generated from the provided design is the agent's best estimate that satisfies the existing constraints. Validate it against your editorial and governance requirements before adopting it fully into your codebase.
+**Generated content model** – Unless given specific and detailed instructions, a content model generated from the provided design is the agent's best estimate that satisfies the existing constraints. Validate it against your editorial and governance requirements before adopting it fully into your codebase.
 
-**Both Page Builder modes** -- A widget that renders correctly on the live site can still fail in the editor, where properties, inline editors, and empty states behave differently. Add the component to a page and test it in edit mode as well as on the live site.
+**Both Page Builder modes** – A widget that renders correctly on the live site can still fail in the editor, where properties, inline editors, and empty states behave differently. Add the component to a page and test it in edit mode as well as on the live site.
 
-**Retrieval under load** -- Linked-item depth, projection, and caching decisions look correct against development data and degrade against production volumes. Raising linked-items depth above zero is the usual cause. Before you accept a generated query, read [Reference - ContentRetriever API](https://docs.kentico.com/x/reference_content_retriever_api_xp).
+**Retrieval under load** – Linked-item depth, projection, and caching decisions may look correct against development data, but degrade against production volumes. Raising linked-items depth above zero is the usual cause. Before you accept a generated query, read [Reference - ContentRetriever API](https://docs.kentico.com/x/reference_content_retriever_api_xp).
 
 ## Customize
 
