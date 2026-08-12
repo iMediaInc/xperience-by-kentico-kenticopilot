@@ -1,0 +1,12 @@
+{
+  "name": "kentico-web-development",
+  "version": "1.0.0",
+  "description": "Build Xperience websites with AI assistance. Model content from designs, build Page Builder widgets and templates, write content retrieval code, and validate the result against the original design",
+  "author": {
+    "name": "Kentico"
+  },
+  "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-web-development",
+  "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
+  "license": "MIT",
+  "keywords": ["kentico", "xperience", "web-development", "widget", "page-builder", "page-templates", "content-modeling", "content-retrieval", "design-validation", "cms"]
+}

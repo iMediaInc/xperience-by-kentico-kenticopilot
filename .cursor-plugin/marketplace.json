@@ -5,49 +5,62 @@
     "email": "support@kentico.com"
   },
   "metadata": {
-    "description": "AI agent skills, instructions, and workflows for Xperience by Kentico development",
-    "version": "1.0.0",
+    "description": "Agent plugins that teach AI coding assistants how to build, migrate, and maintain Xperience by Kentico projects",
+    "version": "2.0.2",
     "pluginRoot": "plugins"
   },
   "plugins": [
     {
-      "name": "widget-creation",
-      "source": "widget-creation",
-      "description": "Skills and references for creating Page Builder widgets in Xperience by Kentico",
-      "version": "1.0.0",
+      "name": "kentico-digital-experience",
+      "source": "kentico-digital-experience",
+      "description": "Extend Xperience digital experience workflows with custom components, such as Automation actions and conditions that add custom step types to the Automation Builder and Automation triggers that start processes from application code",
+      "version": "1.1.1",
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/iMediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/widget-creation",
-      "repository": "https://github.com/iMediainc/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-digital-experience",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
-      "keywords": ["kentico", "xperience", "widget", "page-builder", "cms"]
+      "keywords": ["kentico", "xperience", "digital-experience", "automation", "automation-builder", "automation-action", "automation-condition", "automation-trigger", "marketing", "cms"]
     },
     {
-      "name": "kx13-codebase-migration",
-      "source": "kx13-codebase-migration",
-      "description": "Skills, references, and workflows for migrating the codebase of Kentico Xperience 13 projects to Xperience by Kentico",
+      "name": "kentico-web-development",
+      "source": "kentico-web-development",
+      "description": "Build Xperience websites with AI assistance. Model content from designs, build Page Builder widgets and templates, write content retrieval code, and validate the result against the original design",
       "version": "1.0.0",
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/iMediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-codebase-migration",
-      "repository": "https://github.com/iMediainc/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-web-development",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
-      "keywords": ["kentico", "xperience", "migration", "kx13", "cms"]
+      "keywords": ["kentico", "xperience", "web-development", "widget", "page-builder", "page-templates", "content-modeling", "content-retrieval", "design-validation", "cms"]
     },
     {
-      "name": "kx13-content-migration",
-      "source": "kx13-content-migration",
-      "description": "Skills, references, and workflows for migrating the codebase of Kentico Xperience 13 projects to Xperience by Kentico",
+      "name": "kentico-kx13-migration",
+      "source": "kentico-kx13-migration",
+      "description": "Migrate Kentico Xperience 13 projects to Xperience by Kentico by auditing the source content model, driving the Migration Tool, and porting live-site code",
       "version": "1.0.0",
       "author": {
         "name": "Kentico"
       },
-      "homepage": "https://github.com/iMediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kx13-content-migration",
-      "repository": "https://github.com/iMediainc/xperience-by-kentico-kenticopilot",
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-kx13-migration",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
       "license": "MIT",
-      "keywords": ["kentico", "xperience", "migration", "kx13", "cms"]
+      "keywords": ["kentico", "xperience", "migration", "upgrade", "kx13", "migration-tool", "content-hub", "cms"]
+    },
+    {
+      "name": "kentico-project-lifecycle",
+      "source": "kentico-project-lifecycle",
+      "description": "Manage Xperience by Kentico project lifecycle. Update Xperience projects to a target version and generate deployment-scoped CI/CD repository.config filters from selected pull requests or commits",
+      "version": "1.0.0",
+      "author": {
+        "name": "Kentico"
+      },
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-project-lifecycle",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
+      "license": "MIT",
+      "keywords": ["kentico", "xperience", "ci/cd", "continuous-deployment", "deployment", "update", "repository-config", "project-lifecycle", "cms"]
     }
   ]
 }

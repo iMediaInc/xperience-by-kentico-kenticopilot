@@ -1,0 +1,12 @@
+{
+  "name": "kentico-project-lifecycle",
+  "version": "1.0.0",
+  "description": "Manage Xperience by Kentico project lifecycle. Update Xperience projects to a target version and generate deployment-scoped CI/CD repository.config filters from selected pull requests or commits",
+  "author": {
+    "name": "Kentico"
+  },
+  "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-project-lifecycle",
+  "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
+  "license": "MIT",
+  "keywords": ["kentico", "xperience", "ci/cd", "continuous-deployment", "deployment", "update", "repository-config", "project-lifecycle", "cms"]
+}

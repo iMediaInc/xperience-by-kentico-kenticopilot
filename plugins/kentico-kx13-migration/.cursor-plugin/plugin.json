@@ -1,0 +1,12 @@
+{
+  "name": "kentico-kx13-migration",
+  "version": "1.0.0",
+  "description": "Migrate Kentico Xperience 13 projects to Xperience by Kentico by auditing the source content model, driving the Migration Tool, and porting live-site code",
+  "author": {
+    "name": "Kentico"
+  },
+  "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-kx13-migration",
+  "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
+  "license": "MIT",
+  "keywords": ["kentico", "xperience", "migration", "upgrade", "kx13", "migration-tool", "content-hub", "cms"]
+}
