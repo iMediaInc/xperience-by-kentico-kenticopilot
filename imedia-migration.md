@@ -3,9 +3,10 @@
 ## set up your project
 1. create a new repo
 2. move the legacy Kentico 13 code to the `/kx13` directory.
-3. create a new `/xbyk` directory. Install xByK here. make sure that the version is supported by the content migration application. see the [README](./plugins/kx13-content-migration/README.md)
+3. create a new `/xbyk` directory. Install xByK here. make sure that the version is supported by the content migration application. see the [README](./plugins/kentico-kx13-migration/README.md)
 4. create an audit-results folder
-5. install the kentico migration tool. see the deatils in the [migration readme](./plugins/kx13-content-migration/README.md)
+
+5. install the kentico migration tool. see the deatils in the [migration readme](./plugins/kentico-kx13-migration/README.md)
 
 your workspace should look like this:
 
@@ -23,14 +24,14 @@ your workspace should look like this:
 ### NOTE: USE A GOOD MODEL. 
 
 ## run the content audit
-1. Add a connection string to the content Auditor cli: see directions [here:](./plugins/kx13-content-audit#set-up-the-auditor-source) 
+1. Add a connection string to the content Auditor cli: see directions [here:](./plugins/kentico-kx13-migration#set-up-the-auditor-source) 
 2. build the content auditor solution
-3. run `/kx13-content-audit` from the agent window. this will output the content audit data into the `/audit-results` folder.
+3. run `/migrate-content-audit` from the agent window. this will output the content audit data into the `/audit-results` folder.
 
 ## Run content migration
 1. run the migration planning
 ``` 
-/migrate-plan
+/migrate-content-plan
 
 Produce a migration plan from the JSON output in ./audit-results
 ```
@@ -43,7 +44,7 @@ you might need to iterate on this.
 
 3. generate the migration tool's app settings.
 ```
-/migrate-appsettings
+/migrate-content-appsettings
 
 The plan in ./migration-detail.md is ready. Generate the migration
 tool's appsettings.json from it.
@@ -51,7 +52,7 @@ tool's appsettings.json from it.
 
 4. generate the IClassMappings
 ```
-/migrate-classes
+/migrate-content-classes
 
 Generate the IClassMapping and ReusableSchemaBuilder C# extensions
 for the page types and reusable field schemas described in
@@ -60,7 +61,7 @@ for the page types and reusable field schemas described in
 
 5. migrate the fields
 ```
-/migrate-fields
+/migrate-content-fields
 
 Generate the IFieldMigration extensions for the cross-class field
 transforms in ./migration-detail.md (HTML sanitization, URL rewrites,
@@ -69,7 +70,7 @@ and the legacy form-control conversions the plan flags).
 
 6. migrate the widgets
 ```
-/migrate-widgets
+/migrate-content-widgets
 
 Generate the IWidgetMigration and IWidgetPropertyMigration extensions
 for the custom widgets that ./migration-detail.md flags for transforms.
@@ -85,15 +86,16 @@ in ./migration-detail.md.
 ```
 
 8. loop on running and evaluating the content migration until everything works well.
+*make sure you've got the media library in the kx13 directory or things will not go well*
 ```
-/migrate-run
+/migrate-content-run
 
 Migration.Tool.Extensions builds clean and the KX13 source app is
 running. Execute the migration end-to-end against the configured
 target database following ./migration-detail.md.
 ```
 ```
-/migrate-eval
+/migrate-content-eval
 
 migrate-run finished. Compare the migrated XbyK database against
 ./migration-detail.md and produce the HTML report at ./migration-eval.html  so I know what to

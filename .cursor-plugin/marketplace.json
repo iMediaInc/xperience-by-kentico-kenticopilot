@@ -50,6 +50,19 @@
       "keywords": ["kentico", "xperience", "migration", "upgrade", "kx13", "migration-tool", "content-hub", "cms"]
     },
     {
+      "name": "kentico-kx13-codebase-migration",
+      "source": "kentico-kx13-codebase-migration",
+      "description": "Migrate Kentico Xperience 13 codebase to Xperience by Kentico by auditing the source codebase, driving the Migration Tool, and porting live-site code",
+      "version": "1.0.0",
+      "author": {
+        "name": "Kentico"
+      },
+      "homepage": "https://github.com/imediainc/xperience-by-kentico-kenticopilot/tree/main/plugins/kentico-kx13-codebase-migration",
+      "repository": "https://github.com/imediainc/xperience-by-kentico-kenticopilot",
+      "license": "MIT",
+      "keywords": ["kentico", "xperience", "migration", "upgrade", "kx13", "migration-tool", "content-hub", "cms"]
+    },
+    {
       "name": "kentico-project-lifecycle",
       "source": "kentico-project-lifecycle",
       "description": "Manage Xperience by Kentico project lifecycle. Update Xperience projects to a target version and generate deployment-scoped CI/CD repository.config filters from selected pull requests or commits",
