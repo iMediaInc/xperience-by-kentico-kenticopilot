@@ -109,9 +109,9 @@ Based on the results in ./migration-eval.html, fix the critical issues in the mi
 
 ## migrate custom tables
 This will migrate custom tables into Kentico Content Types.
-In the below prompt, substitute the prefix of the tables in the legacy and target (the target will be the namespace in XbyK)
+In the below prompt, substitute the prefix of the tables in the legacy and target (the target will be the namespace in XbyK). make sure you've created a workspace otherwise the app will use the default.
 ```
-For any of the custom tables that haven't been migrated yet, run the /migrate-custom-tables skill. The legacy prefix is {legacy prefix} and the ProjectName is {target prefix}
+For any of the custom tables that haven't been migrated yet, run the /migrate-custom-tables skill. The legacy prefix is {legacy prefix}, the ProjectName is {target prefix}, and the workspace is {workspace name} (ID {workspace ID})
 ```
 ## migrate business layer
 This will migrate the business layer from .net framework to .net core and upgrade the app to use XByK references. Here's the parameters:
@@ -182,9 +182,9 @@ create a git worktree for yourself by running `git worktree add ./migration-work
 Only migrate pages assigned to Worker {subagent identifier}.
 
 Use the KentiCopilot codebase migration skills where appropriate:
-- migrate-page for page controller/view/repository/dependency migration
-- migrate-page-widgets for page-specific Page Builder widgets and sections
-- migrate-shared-component only for shared components explicitly assigned to Worker {subagent identifier}
+- migrate-code-page for page controller/view/repository/dependency migration
+- migrate-code-page-widgets for page-specific Page Builder widgets and sections
+- migrate-code-component only for shared components explicitly assigned to Worker {subagent identifier}
 
 Rules:
 - Do not edit pages assigned to other workers.
@@ -203,9 +203,9 @@ you are the page migrator for a Kentico XPerience 13-> XbyK migration.
 
 1. Gather a list of all page urls from KX13 to migrate. store those in a file in migration/_control. 
 Break that list into 10 worker processes. use the kentico MCP and the KxConnectionString from Migration.Tool.CLI/appsettings.json to help you get the page urls.
-2. Start 10 subagents. have each worker process create their own git worktree. Each should take it's own list of urls from the list we generated in the first step. each subagent should run  /migrate-page-widgets  and /migrate-page  for that given url. The url for the legacy site is {legacy url}.  for now, focus on the "{main Page type}" page type pages.
-3. when a worker is done with the migration of a page, use the /migrate-page-visual skill to take a snapshot of the page on both the xbyk site and the KX13 site and use the playwright-mcp to generate a differential. if more than 20% of the pixels are off, then flag that item in the url list we created above for further review.
+2. Start 10 subagents. have each worker process create their own git worktree. Each should take it's own list of urls from the list we generated in the first step. each subagent should run  /migrate-code-page-widgets  and /migrate-code-page  for that given url. The url for the legacy site is {legacy url}.  for now, focus on the "{main Page type}" page type pages.
+3. when a worker is done with the migration of a page, use the /migrate-code-page-visual skill to take a snapshot of the page on both the xbyk site and the KX13 site and use the playwright-mcp to generate a differential. if more than 20% of the pixels are off, then flag that item in the url list we created above for further review.
 4. When done with the first pass, let me know what pages have issues.
-5. Run through the pages that have errors from the first pass. For each one use the /migrate-page-visual skill to take a snapshot of the page on both the xbyk site and the KX13 site and use the playwright-mcp to generate a differential. If more than 20% of the pixels are off, then flag that item in the url list we created above for further review. If there is still an issue, assign the page to it's particular worker. That worker should use /migrate-page-widgets and /migrate-page to fix the page. run /migrate-page-visual again when done, take the snapshot, and flag again if it still doesn't look right.
+5. Run through the pages that have errors from the first pass. For each one use the /migrate-code-page-visual skill to take a snapshot of the page on both the xbyk site and the KX13 site and use the playwright-mcp to generate a differential. If more than 20% of the pixels are off, then flag that item in the url list we created above for further review. If there is still an issue, assign the page to it's particular worker. That worker should use /migrate-code-page-widgets and /migrate-code-page to fix the page. run /migrate-code-page-visual again when done, take the snapshot, and flag again if it still doesn't look right.
 6. Generate another report with the final results after the 2nd pass.
 ```
