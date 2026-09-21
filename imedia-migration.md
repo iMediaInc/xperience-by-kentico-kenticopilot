@@ -3,10 +3,12 @@
 ## set up your project
 1. create a new repo
 2. move the legacy Kentico 13 code to the `/kx13` directory.
-3. create a new `/xbyk` directory. Install xByK here. make sure that the version is supported by the content migration application. see the [README](./plugins/kentico-kx13-migration/README.md)
+3. create a new `/xbyk` directory. Install xByK here.  **Make sure that the version is supported by the content migration application. see the [README](./plugins/kentico-kx13-migration/README.md)** 
 4. create an audit-results folder
 
 5. install the kentico migration tool. see the deatils in the [migration readme](./plugins/kentico-kx13-migration/README.md)
+
+
 
 your workspace should look like this:
 
@@ -36,11 +38,12 @@ your workspace should look like this:
 Produce a migration plan from the JSON output in ./audit-results
 ```
 
-2. validate the model. for example for SCFTA I needed to tell it:
+2. validate the model. An Example:
 ```
-For any pages that don't inherit from SCFTA.BasePage, lets assume that we want to migrate that to a new content type in xByK. Update the migration plans to do that.
+Validate the migration plan to ensure that the BasePage type has become a reusable content schema. Make sure there is also a content schema for MetaData that includes the DocumentPageName, DocumentPageTitle, DocumentPageDescription, and DocumentPageKeywords. any page that has those fields should use the new MetaData reusable content schema. Make sure that the fields are mapped properly when migrating from the old fields to the new reusable schema fields.
+
 ```
-you might need to iterate on this.
+you might need to iterate on this. There may be other reusable fields that you want to migrate. make sure that you validate against both the `migration-overview.md` and `migration-detail.md` fields. This will save you headaches down the road
 
 3. generate the migration tool's app settings.
 ```
@@ -105,6 +108,8 @@ fix and which sibling skill to re-run for each finding.
 Based on the results in ./migration-eval.html, fix the critical issues in the migration.
 ```
 ... rerun eval, fix, repeat
+
+
 
 ## migrate Global code
 This will create the `Entitles` project and generate entity classes, global assts, routing and page builder setup.
