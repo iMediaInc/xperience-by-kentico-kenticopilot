@@ -6,6 +6,8 @@ description: >-
   xByK and ASP.NET Core equivalents while preserving Tessitura/iMedia SDK calls.
   Use when migrating business layer code, services, extensions, models, or event
   handlers from KX13 to xByK.
+
+  In some cases, the source project may be in .net core but not version 10. If that's the case, migrate the business layer to XbyK and .net 10.
 ---
 
 # Migrate Business Layer (KX13 → xByK)
@@ -19,7 +21,7 @@ Before starting, collect these values from the user. Use them everywhere you see
 | `{CLIENT}` | Client/project name used in **project/assembly** names (not necessarily content type ClassNames) | `Segerstrom` |
 | `{CONTENT_TYPE_NAMESPACE}` | C# / ClassName namespace of generated entity types — must match registered `CMS_Class.ClassName` prefixes | `SCFTA` |
 | `{KX13_SOURCE}` | Relative path to the KX13 business layer project | `kx13/Segerstrom.Business` |
-| `{XBYK_WEB}` | Relative path to the xByK web project | `xbky` |
+| `{XBYK_WEB}` | Relative path to the xByK web project | `src/xbky` |
 | `{KX13_CODENAME_PREFIX}` | KX13 document type code name prefix (usually the site code) | `SCFTA` |
 | `{TESS_API_VERSION}` | iMedia.Tess.Api NuGet package version | `16.0.16` |
 | `{KENTICO_CORE_VERSION}` | Kentico.Xperience.Core NuGet package version | `31.4.3` |
@@ -109,7 +111,7 @@ Group files into these categories:
 
 Migrate in dependency order — each phase builds on the last:
 
-1. **Compatibility shims** — minimal stubs for `System.Web`, `CMS.Scheduler`, and optionally `ceTe.DynamicPDF`
+1. **Compatibility shims** — minimal stubs for `System.Web`, `CMS.Scheduler`, and optionally `ceTe.DynamicPDF` if source is .net Framework
 2. **ConfigSettings + Constants** — foundation, no deps
 3. **Tessitura models** — POCOs, minor deps
 4. **Custom table POCOs** — replace KX13 `CustomTableItem` subclasses
