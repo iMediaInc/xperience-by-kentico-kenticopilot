@@ -106,6 +106,12 @@ Based on the results in ./migration-eval.html, fix the critical issues in the mi
 ```
 ... rerun eval, fix, repeat
 
+## migrate Global code
+This will create the `Entitles` project and generate entity classes, global assts, routing and page builder setup.
+```
+/migrate-code-global
+```
+
 
 ## migrate custom tables
 This will migrate custom tables into Kentico Content Types.
