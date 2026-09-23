@@ -191,9 +191,19 @@ Rules:
 - Do not edit shared components unless Worker {subagent identifier} owns them.
 - Do not make unrelated formatting changes.
 - Preserve behavior, routing, field mappings, SEO/meta behavior, localization, and widget behavior.
-- After each page, update migration/_control/page-status/worker-a.md.
+- After each page, update migration/_control/page-status/worker-{subagent identifier}.md.
 - Include source files changed, target files changed, assumptions, unresolved issues, and validation steps.
 - Run build/tests if available and record the result.
+```
+
+```
+you are in charge of the shared code migration. 
+
+Your job is to merge the worker's worktrees and ensure that everything merges correctly and the XbyK solution builds.
+
+Use git to merge the worktrees in to main one at a time. after each merge, if there are conflicts, resolve them. make sure that the main branch builds successfully after each worktree is merged in.
+
+When all worktrees are successfully merged, run playwright to ensure that the site loads successfully.
 ```
 
 now we bulk migrate pages.
