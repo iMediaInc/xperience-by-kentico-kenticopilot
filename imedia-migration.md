@@ -3,10 +3,12 @@
 ## set up your project
 1. create a new repo
 2. move the legacy Kentico 13 code to the `/kx13` directory.
-3. create a new `/xbyk` directory. Install xByK here. make sure that the version is supported by the content migration application. see the [README](./plugins/kentico-kx13-migration/README.md)
+3. create a new `/xbyk` directory. Install xByK here.  **Make sure that the version is supported by the content migration application. see the [README](./plugins/kentico-kx13-migration/README.md)** 
 4. create an audit-results folder
 
 5. install the kentico migration tool. see the deatils in the [migration readme](./plugins/kentico-kx13-migration/README.md)
+
+
 
 your workspace should look like this:
 
@@ -36,13 +38,26 @@ your workspace should look like this:
 Produce a migration plan from the JSON output in ./audit-results
 ```
 
-2. validate the model. for example for SCFTA I needed to tell it:
+2. validate the model. An Example:
 ```
-For any pages that don't inherit from SCFTA.BasePage, lets assume that we want to migrate that to a new content type in xByK. Update the migration plans to do that.
-```
-you might need to iterate on this.
+Validate the migration plan to ensure that the BasePage type has become a reusable content schema. Make sure there is also a content schema for MetaData that includes the DocumentPageName, DocumentPageTitle, DocumentPageDescription, and DocumentPageKeywords. any page that has those fields should use the new MetaData reusable content schema. Make sure that the fields are mapped properly when migrating from the old fields to the new reusable schema fields.
 
-3. generate the migration tool's app settings.
+```
+3. Identify any widget properties that might not have been lifted into a content type but maybe should have.
+```
+Identify widget properties that might be lifted into a new content hub type. create a document at `/migrationplan/widget-content-hub-candidates.md` with those so I can review each field per-widget. Keep display-related widget fields on the widget itself. For any JSON fields, look at the KX13 implementation to see what the fields for that item should be and recommend a content type shape.
+
+ImgixSettings fields should be swapped to use XbyK's Image variants instead.
+```
+when you've validated the widget plan, make sure that the migration details are set based on what you've decided in the candidates file. If there are changes you want to see in that doc, go ahead and make them. For example, if the agent decides you should lift a single text field into a header type, that's obviously not a great editor experience, so you can edit that `candidates.md` file to be more appropriate.
+
+```
+Ensure that the `migration-overview.md` and `migration-detail.md` files match what we've decided in the `widget-content-hub-candidates.md`
+```
+
+*You might need to iterate on this. There may be other reusable fields that you want to migrate. make sure that you validate against both the `migration-overview.md` and `migration-detail.md` fields. This will save you headaches down the road!*
+
+4. generate the migration tool's app settings.
 ```
 /migrate-content-appsettings
 
@@ -50,7 +65,7 @@ The plan in ./migration-detail.md is ready. Generate the migration
 tool's appsettings.json from it.
 ```
 
-4. generate the IClassMappings
+5. generate the IClassMappings
 ```
 /migrate-content-classes
 
@@ -59,7 +74,7 @@ for the page types and reusable field schemas described in
 ./migration-detail.md.
 ```
 
-5. migrate the fields
+6. migrate the fields
 ```
 /migrate-content-fields
 
@@ -68,7 +83,7 @@ transforms in ./migration-detail.md (HTML sanitization, URL rewrites,
 and the legacy form-control conversions the plan flags).
 ```
 
-6. migrate the widgets
+7. migrate the widgets
 ```
 /migrate-content-widgets
 
@@ -76,7 +91,7 @@ Generate the IWidgetMigration and IWidgetPropertyMigration extensions
 for the custom widgets that ./migration-detail.md flags for transforms.
 ```
 
-7. migrate the content items
+8. migrate the content items
 ```
 /migrate-content-items
 
@@ -85,7 +100,7 @@ strategies, child-as-reference linking, and page-to-widget conversions
 in ./migration-detail.md.
 ```
 
-8. loop on running and evaluating the content migration until everything works well.
+9. loop on running and evaluating the content migration until everything works well.
 *make sure you've got the media library in the kx13 directory or things will not go well*
 ```
 /migrate-content-run
@@ -105,6 +120,14 @@ fix and which sibling skill to re-run for each finding.
 Based on the results in ./migration-eval.html, fix the critical issues in the migration.
 ```
 ... rerun eval, fix, repeat
+
+
+
+## migrate Global code
+This will create the `Entitles` project and generate entity classes, global assts, routing and page builder setup.
+```
+/migrate-code-global
+```
 
 
 ## migrate custom tables
